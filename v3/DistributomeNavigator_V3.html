@@ -1,0 +1,573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  	<title>Distributome.org</title>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  	
+	<link type="text/css" href="./basic/DistributomeNavigator_V3.css" rel="stylesheet" />
+	
+	<script type="text/javascript" src="./scripts/jquery.js"></script>
+  	<script type="text/javascript" src="./scripts/protovis-r3.2.js"></script>
+  	<!-- Adding bibtex script after jQuery script -->
+    <script type="text/javascript" src="./scripts/bibtex_js.js"></script>
+
+	<script type="text/javascript" src="./scripts/xml2json.js"></script>
+  	<script type="text/javascript" src="./scripts/common.js"></script>
+	<script type="text/javascript" src="./scripts/editor.js"></script>
+	<script type="text/javascript" src="./scripts/splitter.js"></script>
+	<script type="text/javascript" src="./scripts/XMLWriter.js"></script>
+	<script type="text/javascript" src="./scripts/distributome.js"></script>
+
+	 
+	
+	<!--[if !IE7]>
+		<style type="text/css">
+			#wrap{ display:table; height: 100%}
+		</style>
+	<![endif]-->
+  	<script type = "text/javascript">
+  		
+  		$(document).ready(function(){
+  		
+  		    
+  		    // NAVIGATOR //
+  		    
+  			// Adjusts the size of the navigator according
+  			 // to browser size on page load
+  			        
+  			 //future: adjust navigator as browser is resized
+  		    var contentW = $('.content').width() - $('.sidebar').width() - 20;
+      		var contentH = $('.content').height() - $('.footer').height() + 5;
+      		$('#LeftPanel').css('width', contentW);
+      		$('#LeftPanel').css('height', contentH);
+      		//$('#LeftPanel').css('min-height', 100);
+      		//document.getElementById("LeftPanel").style.minHeight="600px";
+                // Adjust Sidebar Height according to
+                // browser height
+            $('.sidebar').css('max-height', contentH);
+               
+               
+            var $body = $('body');   
+            
+  			function resize(){
+
+	            if( $(window).width() <= 800 ){
+	                $('.styled select').css('font-size', '0.8em');
+	                $('.mainmenu li').css('font-size', '0.8em');
+	                $('.mainmenu li').css('margin', '0 10px 0 0');
+	                
+	                $('.mainmenu #home').css('font-size', '1em');
+	                $('.mainmenu #home').css('padding', '0px 40px 0px 20px');
+	                $('.header').css('height', '35px');
+	                $('.accordion h3').css('font-size', '0.8em');
+	                
+	                $('.mainmenu li ul.subnav').css('top', '25px');
+	                $('.mainmenu li ul.subnav').css('width', '100px');
+	                $('.mainmenu li ul.subnav li').css('width', '100px');
+	                $('.mainmenu li ul.subnav li').css('height', '15px');
+	                
+	                $('.footer').css('height', '35px');
+	                $('.footer ul li').css('padding', '5px 0');
+	                //alert('resized');
+	            }
+	            else{
+	                $('.styled select').css('font-size', '0.9em');
+	                $('.mainmenu li').css('font-size', '1em');
+	                //$('.mainmenu li').css('margin', '5px 16px 0 0');
+	                $('.mainmenu #home').css('font-size', '1.5em');
+	                $('.mainmenu #home').css('padding', '0px 60px 0px 27px');
+	                $('.header').css('height', '45px');
+	                $('.accordion h3').css('font-size', '1.0em');
+	                
+	                $('.footer').css('height', '45px');
+	                $('.footer ul li').css('padding', '10px 0');
+	            }
+	        };
+	        // resize Timer prevents browser from calling resize() repeatedly 
+	        var resizeTimer;
+	        $(window).resize(function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout( resize, 100 );
+	        });
+            
+            resize();
+            
+  		    //    Dropdown Menu   //
+  			$("ul.subnav").parent().append("<span></span>");
+  			$(".mainmenu li").hover(function(){
+  				$(this).find("ul.subnav").slideDown('fast').show();
+  				
+  				$(this).hover(function(){
+  				}, function(){
+  					$(this).find("ul.subnav").slideUp('fast');
+  				});
+  				
+  				}).hover(function() {
+  					$(this).addClass("subhover");
+  				}, function(){
+  					$(this).removeClass("subhover");
+  			});
+  			
+
+  			
+  		//    Sidebar    //  	
+  		// implements accordion functionality: all panels start hidden
+  		// currently, only one panel is allowed to be open at a time.
+  			$('.accordion:eq(0)> div').hide();
+	        $('.accordion:eq(0)> h3').click(function() {
+	        		var old=$('.active');
+	        		old.toggleClass('active');
+	        		old.next().slideToggle('fast');
+	        	    $(this).next().slideToggle('fast');
+	        	    $(this).toggleClass('active');
+	        });
+	        
+	        
+  		});
+  		
+  		// BODY FUNCTION //
+  		function isKeyPressed(event){
+			if (event.shiftKey==1) {
+			  _shiftKey = true;
+			}else{
+			  _shiftKey = false;
+			}
+		}
+
+  		// SITE TRACKER // 
+        var sc_project=5714596; 
+        var sc_invisible=1; 
+        var sc_partition=71; 
+        var sc_click_stat=1; 
+        var sc_security="038e9ac4"; 
+  		
+  	</script>
+  	
+  	<!-- LATEX / TYPESETTING CODE-->
+  	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  	
+  		<script> 
+
+  		MathJax.Hub.Config({
+  			TeX: {
+    			Macros: {
+      				sgn: '{\\text{sgn}}' ,
+      				// \newcommand{\sgn}{\text{sgn}} ,  
+      				sech: '{\\text{sech}}' ,
+      				erf: '{\\text{erf}}' ,
+      				bs: ['{\\boldsymbol #1}',1]
+    			}
+  			}
+		}); 
+
+  	</script>
+  	
+  	<script type="text/x-mathjax-config">
+
+  		MathJax.Hub.Config({
+    		extensions: ["tex2jax.js"],
+    		jax: ["input/TeX","output/HTML-CSS"],
+    		tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  		});
+
+  	</script>
+  	
+  	<!-- NAVIGATOR FUNCTIONS -->
+  	<script type="text/javascript+protovis">
+  	
+  	    /**
+  	      Bottom Toolbar Functions
+  	      Enables Functionality of the menus and the restart/reset/pause buttons
+  	    **/
+  	    
+        function resetNavigator(){
+            resetView();
+            resetNodesEdges();
+            vis.render();
+        }
+        
+        function resetNodesEdges(){
+            resetNodes();
+            resetEdges();
+        }
+        
+        function resetNodes(){
+            var classes = pv.nodes(distributome.nodes);		
+            classes.slice(1).forEach(function(d) {
+                var i = 5;
+                d.nodeValue.selected = false;
+                d.nodeValue = d.nodeValue.value;
+                if (isNaN(d.x)) d.x = w / 2 + 40 * Math.random() - 20;
+                if (isNaN(d.y)) d.y = h / 2 + 40 * Math.random() - 20;
+            });
+        }
+        
+        function resetEdges(){
+            var classes = pv.nodes(distributome.edges);		
+            classes.slice(1).forEach(function(d) {
+                d.nodeValue.selected = false;
+            });
+        }
+            
+        function getSelectedNodes(){
+            var classes = pv.nodes(distributome.nodes);	
+            var selectedNodes = new Array();
+            classes.slice(1).forEach(function(d) {
+                if(d.nodeValue.selected == 'red'){
+                    selectedNodes.push(getDistributionName(d.nodeValue.nodeName));
+                }
+            });
+            return selectedNodes;
+        }
+        
+        function graphPause(){
+            force.stop();
+        }
+        
+        function graphRestart(){
+            force.start();
+        }
+    
+        function resizeDistributome(){
+            force.nodes(distributome.nodes);
+    
+            force.reset();
+            var leftPanelWidth = document.getElementById('LeftPanel').style.width;
+            var leftPanelHeight = document.getElementById('LeftPanel').style.height;
+            var w =	leftPanelWidth.substring(0,leftPanelWidth.indexOf('px')),
+                h = leftPanelHeight.substring(0,leftPanelHeight.indexOf('px'));
+            vis.width(w);
+            vis.height(h);
+            vis.render();
+            graphPause();
+    
+        }
+    
+    </script>
+</head>
+<body onmousedown="isKeyPressed(event)">
+
+    <!-- Footer HTML -->
+    <!-- Toolbar code taken from client's original html file -->
+	<div class="footer">
+		<ul id="toolbar">
+			<li>
+			<input id="distributome.text" name="search" type="text" size="25" onKeydown="Javascript: if (event.keyCode==13) textSearch();" placeholder="Find distributions or relations"/>
+			</li>
+			<li>
+			<div class="styled">
+			<form action="NeughborAction">
+				<select name="Neighbors" id="distributome.neighborAction" 
+					style="text-align:Right;width:110px" onchange="neighborsFetch();">
+					<option value="neighbors">Neighbors</option>
+					<option value="parent">Parents</option>
+					<option value="children">Children</option>
+					<option value="parentchildren">Parents&Children</option>
+				</select>
+			</form>
+			</div>
+			</li>
+			<li>
+			<div class="styled">
+			<form action="NodeTypeAction">
+				<select name="NodeType" id="distributome.nodeTypeAction" 
+					style="text-align:Right;width:150px" onchange="nodeTypeInfoFetch();">
+					<option value="distributionType">Distribution <br>Type</option>
+					<option value="convolution">Convolution</option>
+					<option value="memoryless">Memoryless</option>
+					<option value="inverse">Inverse</option>
+					<option value="linearCombination">Linear Combination</option>
+					<option value="maximum">Maximum</option>
+					<option value="minimum">Minimum</option>
+					<option value="discrete">Discrete</option>
+					<option value="continuous">Continuous</option>
+				</select>
+			</form>
+			</div>
+			</li>
+			<li>
+			<div class="styled">
+			<form action="EdgeTypeAction">
+				<!-- Get the type of an edge (relation) and highlight all edges of this type.
+					Note that all edges are directional!
+				-->
+				<select name="EdgeType" id="distributome.edgeTypeAction" 
+					style="text-align:Right;width:140px" onchange="edgeTypeInfoFetch();">
+					<option value="relationType">Relation Type</option>
+					<option value="special case">Special Case</option>
+					<option value="transform">Transform</option>
+					<option value="limiting">Limiting</option>
+					<option value="transformation">Transformation</option>
+					<option value="bayesian">Bayesian</option>
+				</select>
+			</form>
+			<div>
+			</li>
+			<li>
+			<div class="styled">
+			<form action="ConnectedNodesAction">
+				<select name="ConnectedNodes" id="distributome.connectedNodesAction" 
+					style="text-align:Right;width:110px" onchange="resetView();connectedNodesFetch();">
+					<option value="connectivity">Ontology</option>
+					<option value="mostConnected">Top Level</option>
+					<option value="connected">Middle Level</option>
+					<option value="sparselyConnected">Display All</option>
+				</select>
+			</form>
+			</div>
+			</li>
+			<li>
+				<button type="button" class="button" tabindex="4" title="Reset View" 
+					onclick="resetPage();">RESET</button>
+			</li>	
+			<li>
+				<button type="button" class="button" tabindex="4" title="Restart View" 
+					onclick="graphRestart();">RESTART</button>
+			</li>
+			<li>
+				<button type="button" class="button" tabindex="4" title="Pause View" 
+					onclick="graphPause();">PAUSE</button>
+			</li>
+		</ul>
+	</div>
+	<div id="wrap">
+		<div class="header">
+		    <!-- TOP MENU CODE -->
+			<ul class = "mainmenu">
+			    <!-- to add a new menu item: insert a new 
+			    	<li><a href="link to content">MenuItemName</a></li>
+			        <ul class="subnav">  </ul> indicates that the <li> objects within are 
+			        part of the submenu 
+			    -->
+				<li id = "home"><a href="http://www.distributome.org/" 
+					title="Distributome Home Page">Distributome</a></li>
+				<li><a href="http://www.distributome.org/about.html" 
+					title="About the Distributome Project">About</a></li>
+				<li><a href="http://distributome.org/js/DistributomeDBSearch.xml.html"  
+					title="Dynamic Search of the Distributome Database">DB Search</a></li>
+				<li><a href="./DistributomeGame.html" 
+					title="Distributome Game">Game</a></li>
+				<li><a href="http://distributome.org/tools.html"  
+					title="Probability Calculators, Virtual Experiments, Interactive Simulators">Tools</a></li>
+				<li><a href="http://distributome.org/blog/?cat=4" 
+					title="Learning Modules and Activities">Activities</a></li>
+				<li><a href="http://distributome.org/blog/" 
+					title="Distributome Blog">Blog</a></li>
+			</ul>
+		</div>
+		<div class = "content">
+			<!-- div id="LeftPanel" style="width:100%; height:100%" > -->
+			<div id="LeftPanel" style="width:100%; min-height:700px; max-height:100%" >
+                <script type="text/javascript+protovis">
+                
+                            /**	
+                                Protovis Code that Renders the Navigator
+                            ***/
+                        try{
+                            var leftPanelWidth = document.getElementById('LeftPanel').style.width;
+                            var leftPanelHeight = document.getElementById('LeftPanel').style.height;
+                            var w =	leftPanelWidth.substring(0,leftPanelWidth.indexOf('px')),
+                                h = leftPanelHeight.substring(0,leftPanelHeight.indexOf('px')),
+                                colors = pv.Colors.category10();
+                                    
+                            var vis = new pv.Panel()
+                                .width(w)
+                                .height(h)
+                                .fillStyle("white") 
+                                .event("mousedown", pv.Behavior.pan())
+                                .event("mousewheel", pv.Behavior.zoom());				
+                
+                                /*** To Do: Need to trigger a Split-Frame Resizing when the mouse-scroll
+                                     zoom action is triggered. See the split-pane resizing functionality
+                                     below ($("#MainSplitPaneObject").trigger("resize");). Something like:
+                                     .event("mousewheel", graphZoomResizeFrame());
+                                     Currently, the graph-zoom expands the frame, but leaves the split-pane
+                                     size unchanged!
+                                ****/
+                
+                            force = vis.add(pv.Layout.Force)
+                                .nodes(distributome.nodes)
+                                .links(distributome.edges)
+                                .springConstant(0.05)
+                                .chargeConstant(-80)
+                                .springLength(200)
+                                .bound(true); 
+                        
+                            var linky = force.link.add(pv.Line)
+                                        .cursor("pointer")
+                                        //.fillStyle("#696969")
+                                        .strokeStyle(function(d,l) getLinkColor(d,l))
+                                        .event("click", function (d, l) { getRelationProperties(d.nodeName, l.index); 
+											setEditorNode(l.index, "link"); });
+                            
+                            linky.add(pv.Dot)
+                                .data(function(l) { if(l.target == l.source) return [{x:0,y:0}];
+                                nodecalc = Math.sqrt((l.targetNode.linkDegree*15)/Math.PI)*2; 
+                                return [{ 
+                                    x: l.targetNode.x - nodecalc * Math.cos(Math.atan2(l.targetNode.y - l.sourceNode.y, l.targetNode.x - l.sourceNode.x)), 
+                                    y: l.targetNode.y - nodecalc * Math.sin(Math.atan2(l.targetNode.y - l.sourceNode.y, l.targetNode.x - l.sourceNode.x)) 
+                                }];
+                                }) 
+                                
+                                .angle(function (n,l) Math.atan2(l.targetNode.y - l.sourceNode.y, l.targetNode.x - l.sourceNode.x) - Math.PI/2) 
+                                .shape("triangle") 
+                                .strokeStyle(function(d,l) getArrowColor(d,l))
+                                .fillStyle(function(d,l) getArrowColor(d,l))
+                                .size( function(d,l) getArrowSize(d,l))
+                                .visible(true);
+                                
+                    var dnodes = force.node.add(pv.Dot)
+                                .bottom(0)
+                                .size(function(d) { return d.selected?(d.linkDegree + 15) * Math.pow(this.scale, -1.5):(d.linkDegree + 4) * Math.pow(this.scale, -1.5)})
+                                .fillStyle(function(d) getColor(d))
+                                //.fillStyle(pv.hsl(225, 0.5, 0.5, 0.5))
+                                .strokeStyle(function() this.fillStyle().darker())
+                                .lineWidth(1)
+                                //.title(function(d) d.nodeName)
+                                .cursor("pointer")
+                                .event("click", function (d) { getNodeProperties(this.index, d.nodeName, d); 
+									setEditorNode(this.index, "node"); })
+                                .event("mousedown", pv.Behavior.drag())
+                                .event("drag", force)
+                                .anchor("center").add(pv.Label)
+                                .text(function(d) getText(d) )
+                                .font(function(d) d.selected?'bold 10pt sans-serif':'normal 7pt sans-serif');
+                            
+                            /*dnodes.add(pv.Color)
+                                .color('#ddd')
+                                .opacity(1);*/
+                
+                            vis.render();
+                        }catch(e){
+                        }
+                        
+                        setDropDownSelectedValue('distributome.connectedNodesAction', 1);
+                        connectedNodesFetch();
+                
+                    </script>
+            </div>
+	
+	    <!-- SIDEBAR CODE -->
+		<div id="navsidebar" class="sidebar">
+		<!-- ACCORDION -->
+		<!-- to add a new panel, simply add a new <h3> NEW PANEL TITLE </h3> 
+		    followed by <div> PANEL CONTENT </div> -->
+				<div class = "accordion">
+					<h3>Editor</h3>
+                        <div id="editor" >
+		                    <div id="editorTitle" ></div>
+		                    <div id="contentHolder" >
+			                    <div id="editorContent" >
+				                    <button id="createDis" >Create a new distribution</button>
+				                    <button id="createRel" >Create a new Relation</button>
+				                    <div id="editorNote" >
+                                        <p>
+                                            Click on an existing distribution or relation in the navigator to edit it.
+                                        </p>
+				                    </div>
+			                    </div>
+			                    <div id="addAttrDiv" >
+                                    <div id="addAttrTitle" >
+                                        Choose an attribute
+                                    </div>
+                                    <div id="disAttr" >
+                                        <div class="attrChoice" >
+                                            Name
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Type
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Model
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Support
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Pdf
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Mode
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Cdf
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Qf
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Mean
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Variance
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Skew
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Kurt
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Median
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Q1
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Q3
+                                        </div>
+                                        <div class="attrChoice" >
+                                            History
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Id
+                                        </div>
+                                    </div>
+                                    <div id="relAttr" >
+                                        <div class="attrChoice" >
+                                            To
+                                        </div>
+                                        <div class="attrChoice" >
+                                            From
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Statement
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Type
+                                        </div>
+                                        <div class="attrChoice" >
+                                            Id
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="editorFooter">
+                            </div>
+	                    </div>
+					<h3>Distribution Properties</h3>
+                        <div id="distributome.propertiesPannel"> <!-- Get the Inter-Distribution Relation Properties from Distributome.xml -->
+			            </div>
+					<h3>Distribution Actions</h3>
+	    				<div>
+                            <ul> 
+                                <li><a href="./calc/NormalCalculator.html" target="_blank" title="Interactive Distribution Calculator" id="distributome.calculator">Calculator</a></li>
+                                <li><a href="./exp/PoissonExperiment.html" target="_blank" title="Run Virtual Distribution Experiment" id="distributome.experiment">Experiment</a></li>
+                                <li><a href="./sim/NormalSimulation.html" target="_blank" title="Distribution Sampling and Simulation" id="distributome.simulation">Simulation</a></li>
+                                <li><a href="./Distributome.xml.html" target="_blank" title="Render the entire Distributome Database as a web-page">Distributome DB HTML View</a></li>
+                            </ul>
+                        </div>
+					<h3>Inter-Distribution Relations</h3>
+					<div id="distributome.relationPannel">
+					</div>
+					<h3>Distribution References</h3>
+					<div id="bibtex_display">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

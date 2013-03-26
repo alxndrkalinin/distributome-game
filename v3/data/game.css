@@ -1,0 +1,140 @@
+text {
+    font: 10px sans-serif;
+}
+
+body {
+    overflow: auto;
+}
+
+.mainmenu #game {
+    font-size: 1.5em;
+    padding: 0px 60px 0px 27px;
+    margin: 0;
+    border: none;
+}
+
+.notmargined {
+    margin-left: 0;
+}
+
+.mainmenu #game > a {
+    cursor: default;
+}
+
+.background {
+    fill: none;
+    pointer-events: all;
+}
+
+.game-data {
+    margin: 20px;
+}
+
+.slopegraph {
+    width: 940px;
+    height: 500px;
+    border: solid 1px #ccc;
+}
+
+.slopegraph line {
+    fill: none;
+    stroke: #333;
+    shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+}
+
+.highlight {
+    fill: #eaf1f6;
+    border: #000 2px;
+}
+
+.pointer-text {
+    font: 1em bold;
+    font-family: helvetica, arial;
+}
+
+.guess {
+    border: #000 2px;
+}
+/*hyz*/
+.score {
+    border: #000 2px;
+	fill: none;
+}
+
+.scoreRight {
+    border: #000 2px;
+	fill: #6F0;
+}
+.scoreWrong {
+    border: #000 2px;
+	fill: #F03;    
+}
+.scoreText{
+    font: 1em bold;
+    font-family: helvetica, arial;
+	font-size: 14px;	
+}
+/*----*/
+.right {
+    fill: #66CD00;
+}
+
+.wrong {
+    fill: #EE2C2C;
+}
+
+.distribution-description {
+    min-height: 100px;
+
+}
+
+.problem-description {
+    min-height: 100px;
+}
+
+.nondisplay {
+    display: none;
+}
+
+.btn-group {
+    margin-top: 10px;
+}
+
+.btn-group > input {
+    display: none;
+}
+
+.btn-group > label {
+    margin: 0 0 0 0;
+}
+
+.btn-group input:first-child + .btn {
+    /* This is an actual copy/paste of the .btn-group .btn:first-child style */
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    margin-left: 0;
+}
+
+input:checked + label.btn {
+    /* This is an actual copy/paste of the .btn:active style */
+    background-color: #E6E6E6;
+    background-image: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.5);
+    outline: 0 none;
+}
+
+input[disabled] + label.btn {
+    /* This is an actual copy/paste of the .btn:disabled style */
+    background-color: #E6E6E6;
+    background-image: none;
+    box-shadow: none;
+    cursor: default;
+    opacity: 0.65;
+}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Distributome.org</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-store"/>
+
+    <link type="text/css" href="./data/bootstrap.min.css" rel='stylesheet'/>
+    <link type="text/css" href="./basic/DistributomeNavigator_V3.css" rel="stylesheet"/>
+    <link type="text/css" href="./data/game.css" rel='stylesheet'/>
+
+    <script type="text/javascript" src="./scripts/jquery.js"></script>
+    <script type="text/javascript" src="./scripts/xml2json.js"></script>
+    <script type="text/javascript" src="./scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./scripts/d3.v2.js"></script>
+
+    <script type="text/javascript" src="./scripts/url.js"></script>
+
+    <script src="./scripts/jquery.stopwatch.js"></script>
+    <script type="text/javascript" src="./scripts/fisheye.js"></script>
+    <script type="text/javascript" src="./scripts/game.js"></script>
+
+
+    <script type="text/javascript"
+            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+        MathJax.Hub.Config({
+            TeX:{
+                Macros:{
+                    sgn:'{\\text{sgn}}',
+                    // \newcommand{\sgn}{\text{sgn}} ,
+                    sech:'{\\text{sech}}',
+                    erf:'{\\text{erf}}',
+                    bs:['{\\boldsymbol #1}', 1]
+                }
+            }
+        });
+    </script>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX","output/HTML-CSS"],
+        tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+        });
+    </script>
+
+    <script> <!-- redircet page -->
+    function redir() {
+        currentNum = $('#num').val();
+        if (parseInt(currentNum) > 0 && parseInt(currentNum) <= 20)
+            window.location.replace('/v3/DistributomeGame.html?problemNum=' + currentNum + '&simplify=' + $('#simp').prop('checked'));
+    }
+    </script>
+
+
+    <script type="text/javascript">   <!-- Set focus -->
+    $(document).ready(function () {
+        $("#num").focus();
+    });
+    </script>
+
+</head>
+<body>
+
+<div id="wrap">
+    <div class="header">
+        <!-- TOP MENU CODE -->
+        <ul class="mainmenu">
+            <!-- to add a new menu item: insert a new
+                <li><a href="link to content">MenuItemName</a></li>
+                <ul class="subnav">  </ul> indicates that the <li> objects within are
+                part of the submenu
+            -->
+            <li id="game"><a href="/game"
+                             title="Distributome Home Page">Distributome Game</a></li>
+            <li id='instructions'><a href="/instructions"
+                                     title="How to play the Distributome Game">Instructions</a></li>
+            <li>&nbsp;</li>
+            <li><a href="http://www.distributome.org/about.html"
+                   title="About the Distributome Project">About</a></li>
+            <li><a href="./DistributomeNavigator_V3.html"
+                   title="Distributome Navigator">Navigator</a></li>
+            <li><a href="http://www.distributome.org/docs.html"
+                   title="Technical Documentation">Tech Docs</a></li>
+            <li><a href="http://distributome.org/tools.html"
+                   title="Probability Calculators, Virtual Experiments, Interactive Simulators">Tools</a></li>
+            <li><a href="http://distributome.org/blog/?cat=4"
+                   title="Learning Modules and Activities">Activities</a></li>
+            <li><a href="http://distributome.org/blog/"
+                   title="Distributome Blog">Blog</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id='instructions-modal' class="modal hide fade">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Instructions</h3>
+            </div>
+            <div class="modal-body">
+                <p>There are uncountably many different processes and only a small finite number of
+                    well-described probability models. One can gain intuition about the varieties of
+                    different processes and the characteristics of different probability distributions
+                    by interactively exploring their properties using the Distributome tools (calculators,
+                    simulators and experiments). The Probability Distributome Game Webapp enables
+                    this exploration as a game of matching pairs of processes and distributions.</p>
+                <h4>Goal of the Distributome Game</h4>
+
+                <p>The goal of the Distributome Game is to correctly identify the correspondences between
+                    pairs of processes (represented as problems) and probability distributions (as models).</p>
+                <h4>How to play?</h4>
+                <ul>
+                    <li>The game board is a Cartesian plane where <b>Rows</b> and <b>Columns</b>
+                        represent problems/processes and distribution models, respectively.
+                    </li>
+                    <li>As you move the mouse over the grid, the zoom-function automatically
+                        expands the Cartesian space around the mouse location. Matching
+                        Problem-Distribution pairs corresponding for the current location are highlighted.
+                    </li>
+                    <li>Try to find which distribution(s) may represent good model(s) for the process
+                        described in the problem.
+                    </li>
+                    <li>Use <b>one mouse click</b> on a cell in this 2D Cartesian plane to select and
+                        highlight a matching problem-distribution pair. Correct or incorrect matches are
+                        indicated by green and red cell background coloring, respectively.
+                    </li>
+                    <li><b>Clicking</b> on a highlighted cell provides access to appropriate <a target="_blank tab"
+                                                                                                href="http://www.distributome.org/tools.html">Distributome
+                        tools</a> for the
+                        selected distribution and optional hints for solving the problem.
+                    </li>
+                </ul>
+                <p>Enjoy the Distributome Game!</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss='modal'>Close</a>
+            </div>
+        </div>
+        <div id='guess-modal' class="modal hide fade">
+            <div class="modal-header">
+                <button type="button" class="close btn-modal-close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h3 class='modal-header-right nondisplay'>You are Correct!</h3>
+
+                <h3 class='modal-header-wrong nondisplay'>Incorrect. Please try again!</h3>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <p class="modal-body-right nondisplay">Congratulations! Now you can use Distributome tools for this
+                    distribution.</p>
+
+                <p class="modal-body-wrong nondisplay">May be you should try again? Get a hint or play with Distributome
+                    tools for this distribution.</p>
+                <ul>
+                    <li><a class="link-calc" href="" target="_blank" title="Interactive Distribution Calculator"
+                           id="distributome.calculator">Calculator</a></li>
+                    <li><a class="link-exp" href="" target="_blank" title="Run Virtual Distribution Experiment"
+                           id="distributome.experiment">Experiment</a></li>
+                    <li><a class="link-sim" href="" target="_blank" title="Distribution Sampling and Simulation"
+                           id="distributome.simulation">Simulation</a></li>
+                </ul>
+                <p class="modal-body-comment nondisplay"></p>
+
+                <p class="modal-body-hint nondisplay"></p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary modal-hint-control nondisplay">Show hint</a>
+                <a href="#" class="btn btn-modal-close" data-dismiss='modal'>Close</a>
+            </div>
+        </div>
+        <div class="game-data">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="row-fluid descriptions">
+                        <div class="span5">
+                            <h4>Problem Description</h4>
+
+                            <div id='problemDescription' class='problem-description'></div>
+                        </div>
+                        <div class="span5">
+                            <h4>Distribution Description</h4>
+
+                            <div id='distributionDescription' class='distribution-description'></div>
+                        </div>
+                        <div class="span2">
+                            <div style='font-size:15'>
+
+                                <div class="example">
+                                    <div class="label" style="width:45%">Click to toggle</div>
+                                    <div id="demo2" class="demo">00:00:00</div>
+                                </div>
+
+                                <div class="label" style="width:50%">Problem Number</div>
+
+                                <input name='problemNum' id='num' type="text" style="width:20%" onKeyUp="redir()"/>
+
+                                <div class="label" style="width:30%">Simplify
+                                    <input name='simplified' id='simp' type="checkbox" onClick="redir()"/>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row notmargined">
+                            <div class="span12">
+                                <div id='slopegraph' class="slopegraph">
+                                </div>
+                                <div id='scores'></div>
+                            </div>
+                        </div>
+                        <!-- div class="row">
+                           <div class="span3">
+                               <h4>Distortion mode:</h4>
+                           </div>
+                           <div class="span3">
+                               <div class="btn-group">
+                                   <input type="radio" name="radios" id="radio-fisheye" />
+                                   <label class="btn" for="radio-fisheye">Fisheye</label>
+                                   <input type="radio" name="radios" id="radio-cartesian" />
+                                   <label class="btn" for="radio-cartesian">Cartesian</label>
+                               </div>
+                           </div>
+                       </div -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
