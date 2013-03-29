@@ -13,6 +13,12 @@ body {
     border: none;
 }
 
+.mainmenu > #instructions > a {
+    font-size: 1.15em;
+    color: #badffa;
+    border: none;
+}
+
 .notmargined {
     margin-left: 0;
 }
@@ -55,7 +61,6 @@ body {
 
 .pointer-text {
     font: 1em bold;
-    font-family: helvetica, arial;
 }
 
 .guess {
@@ -77,8 +82,6 @@ body {
 }
 .scoreText{
     font: 1em bold;
-    font-family: helvetica, arial;
-	font-size: 14px;	
 }
 /*----*/
 .right {

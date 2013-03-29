@@ -1,18 +1,5 @@
-/**
- * Distributome Game project.
- * @author <a href="mailto:alxndrkalinin@gmail.com">Alexandr Kalinin</a>
- */
+(function() {
 
-problemsSize = 20; //default problem number
-originalWidth = 0;
-
-
-var game = function() { 
-    
-	if (jQuery.url.param("problemNum") != null && jQuery.url.param("problemNum") >=1 && jQuery.url.param("problemNum")<=20)  //set problem number according to URL get parameter
-	    problemsSize = parseInt(jQuery.url.param("problemNum"));
-	simplify = jQuery.url.param("simplify");
-   
     var PROBLEMS_URL = './data/DistributomeGame_ProblemExamples_Nov_2012.csv';
     var DISTRIBUTIONS_URL = './data/Distributome.xml';
     /**
@@ -33,7 +20,8 @@ var game = function() {
                     returnJSON(data, eventName, dataFormat);
                 },
                 error: function(data, text) {
-                    alert('Load wasn\'t performed:' + text);
+                    console.log('Load wasn\'t performed:' + text);
+                    // TODO: show modal window with the error
                 }
             });
         }
@@ -92,7 +80,8 @@ var game = function() {
                 return distributions;
 
             } else {
-                alert("Can't load Distributome.xml");
+                console.log("Can't load Distributome.xml");
+                // TODO: show error modal window
                 return false;
             }
         }
@@ -242,8 +231,6 @@ var game = function() {
             }
         };
 
-        var getProblemDescription = function(problem) { return ; };
-
         var prepareDataForGraph = function(problemsData, distributionsData) {
 
             var filteredData = problemsData.filter(isProblem);
@@ -264,7 +251,7 @@ var game = function() {
         };
 
         return {
-            getDataForGraph : prepareDataForGraph
+            prepareDataForGraph : prepareDataForGraph
         }
     })();
 
@@ -273,11 +260,14 @@ var game = function() {
      */
     var DataRenderer = (function() {
 
-        var svg;
-        var width = 940;
-        var height = 500;
-        var isFisheyeMode = false;
-		var distributionsSize = 30;
+        var svg;    // graph area element
+
+        var DEFAULT_WIDTH = 500;
+        var DEFAULT_HEIGHT = 300;
+
+        var width = DEFAULT_WIDTH;
+        var height = DEFAULT_HEIGHT;
+        var margins = 20;
 
         var problems;
         var distributions;
@@ -285,30 +275,41 @@ var game = function() {
         var problemsNumber;
         var distributionsNumber;
 
+        // TODO: make a custom function instead of changing String
+        jQuery.extend (String.prototype, {
+            camelize: function() {
+                return this.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+                    return letter.toUpperCase();
+                }).replace(/\s+/g, '');
+            }
+        });
+
         var init = function(data) {
 
-			if (problemsSize > data.problems.length) //Fix problems size
-			{    
-			   problemsSize = data.problems.length;
-			   alert("Problem size too large");
-			}
-			else if (problemsSize <= 0)
-			{
-			   problemsSize = 1;
-			   alert("Problem size must be positive");
-			}
+//			if (problemsSize > data.problems.length) //Fix problems size
+//			{
+//			   problemsSize = data.problems.length;
+//			   console.log("Problem size too large");
+//                // TODO: show modal window ?
+//			}
+//			else if (problemsSize <= 0)
+//			{
+//			   problemsSize = 1;
+//			   console.log("Problem size must be positive");
+//                // TODO: show modal window ?
+//			}
 			
-			$('#num').attr('value',problemsSize); //set control panel
-			$('#num').attr('max',data.problems.length); //Set max problem size in HTML	
-			if (simplify == 'true')           //set checkbox
-			    $('#simp').prop('checked',true);
-			else
-			    $('#simp').prop('checked',false);
+//			$('#num').attr('value',problemsSize); //set control panel
+//			$('#num').attr('max',data.problems.length); //Set max problem size in HTML
+//			if (simplify == 'true')           //set checkbox
+//			    $('#simp').prop('checked',true);
+//			else
+//			    $('#simp').prop('checked',false);
 				
-			var temp = data.problems.length - problemsSize;
+//			var temp = data.problems.length - problemsSize;
 			problems = data.problems;
-			for (i=0;i<temp;i++) //shrink problems length to problem size
-			    problems.pop();
+//			for (i=0;i<temp;i++) //shrink problems length to problem size
+//			    problems.pop();
 			
             distributions = data.distributions;
             problemsNumber = problems.length;
@@ -316,14 +317,11 @@ var game = function() {
 
             prepareGuessingMap();
 			
-            if ($('#simp').prop('checked'))
-			    shrinkDistributions(); //shrink distributions
-			
-            var margins = 20;
-            adjustViewport(margins); originalWidth = width; //hyz2
-            $(window).resize(function() {
-                adjustViewport(margins);
-            });
+//            if ($('#simp').prop('checked'))
+//			    shrinkDistributions(); //shrink distributions
+
+//            adjustViewport(margins);
+//            originalWidth = width; //hyz2
 
             $('.modal-hint-control').on('click', function() { $('.modal-body-hint').slideToggle();});
             $('#game').on('click', function () { return false; });
@@ -331,33 +329,41 @@ var game = function() {
                 showInstructions();
                 return false;
             });
-//            $('#radio-fisheye').on('click', function() {
-//                if(!isFisheyeMode) {
-//                    isFisheyeMode = true;
-//                    createGraph();
-//                }
-//            });
-//            $('#radio-cartesian').on('click', function() {
-//                if(isFisheyeMode && $(this).prop()) {
-//                    isFisheyeMode = false;
-//                    createGraph();
-//                }
-//            });
-//
-//            $('#radio-cartesian').prop('checked', true);
-            createGraph();
 
+            createGraph();
+            addControlsListeners();
         }
 
-        var adjustViewport = function(margins) {
+        var createGraph = function() {
+
+            removeGraph();
+
+            adjustViewport();
+            $('.slopegraph').width(width).height(height);
+
+            svg = d3.select('#slopegraph').append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            renderCartesian();
+        }
+
+        // Clean graph area before redrawing
+        var removeGraph = function() {
+            svg = d3.select('#slopegraph svg');
+            svg.on('click', null);
+            svg.on('mousemove', null);
+
+            $('#slopegraph').empty();
+        }
+
+        var adjustViewport = function() {
+
             var viewportWidth = $(window).width() - 2 * margins;
             var viewportHeight = $(window).height() - 2 * margins - $('.header').height() - $('.descriptions').height();
 
-            width = Math.max(width, viewportWidth);
-            height = Math.max(height, viewportHeight);
-
-            $('.slopegraph').width(width).height(height);
-			
+            width = Math.max(DEFAULT_WIDTH, viewportWidth);
+            height = Math.max(DEFAULT_HEIGHT, viewportHeight);
         }
 
         var prepareGuessingMap = function() {
@@ -372,49 +378,41 @@ var game = function() {
             } 
         }
 		
-		var shrinkDistributions = function() {
-			
-			if (problemsNumber > distributionsSize)
-			    return;
-						
-            neededDistribution = [];
-			for (i=0;i<distributionsNumber;i++)
-                neededDistribution[i] = 0;
-				
-			for (j=0;j<problemsNumber;j++)  //Creating hashing array to store correct distributions
-			{
-			  neededDistribution[guessingMap[j]] = 1;  
-			}		
-			var i = 0;
-			while (i <= distributionsNumber - distributionsSize)  //Shrinking distributions by randomly delete incorrect distributions
-			{
-			  rand = Math.floor(Math.random()*(distributionsNumber + 1)); 
-			  if (neededDistribution[rand] !=1 && distributions[rand] != 'none') 
-			  {
-			    distributions[rand] = 'none';
-				i++;
-			  }
-			  rand++;
-			}
-					
-			var i = distributions.indexOf('none');
-			while (i != -1)
-			{
-			  distributions.splice(i,1);
-			  i = distributions.indexOf('none');
-			}
-			
-		    distributionsNumber = distributions.length;  //Rerendering
-            prepareGuessingMap();				
-		}
-
-        jQuery.extend (String.prototype, {
-            camelize: function() {
-                return this.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-                    return letter.toUpperCase();
-                }).replace(/\s+/g, '');
-            }
-        });
+//		var shrinkDistributions = function() {
+//
+//			if (problemsNumber > distributionsSize)
+//			    return;
+//
+//            var neededDistribution = [];
+//			for (i=0;i<distributionsNumber;i++)
+//                neededDistribution[i] = 0;
+//
+//			for (j=0;j<problemsNumber;j++)  //Creating hashing array to store correct distributions
+//			{
+//			  neededDistribution[guessingMap[j]] = 1;
+//			}
+//			var i = 0;
+//			while (i <= distributionsNumber - distributionsSize)  //Shrinking distributions by randomly delete incorrect distributions
+//			{
+//			  rand = Math.floor(Math.random()*(distributionsNumber + 1));
+//			  if (neededDistribution[rand] !=1 && distributions[rand] != 'none')
+//			  {
+//			    distributions[rand] = 'none';
+//				i++;
+//			  }
+//			  rand++;
+//			}
+//
+//			var i = distributions.indexOf('none');
+//			while (i != -1)
+//			{
+//			  distributions.splice(i,1);
+//			  i = distributions.indexOf('none');
+//			}
+//
+//		    distributionsNumber = distributions.length;  //Rerendering
+//            prepareGuessingMap();
+//		}
 
         function coord(line, axis) {
             return line[axis + '1']['baseVal']['value'];
@@ -423,17 +421,6 @@ var game = function() {
         var showInstructions = function () {
             var instructionsModal = $('#instructions-modal');
             instructionsModal.modal('show');
-        }
-
-        var createGraph = function() {
-
-            $('#slopegraph').empty();
-
-            svg = d3.select('#slopegraph')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height);
-            isFisheyeMode ? renderFisheye() : renderCartesian();
         }
 
         var getCrossAreaByIndices = function (xLine, yLine, xIndex, yIndex) {
@@ -525,7 +512,7 @@ var game = function() {
             setLabelsPos(xMouse, yMouse);
 			updateGuessRect(xLine, yLine);
 			////////////////hyz////////////
-			updateScoreRect(xLine,yLine);
+//			updateScoreRect(xLine,yLine);
 			///////////////////////////////
         }
 
@@ -582,42 +569,43 @@ var game = function() {
             }
         };
 /////////////////////////////////////////////////update score///////////////////////////////////////
-        var updateScoreRect = function(xLine, yLine) {
+//        var updateScoreRect = function(xLine, yLine) {
+//
+//			lastColumn = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //mod
+//			for (i=1;i<=problemsNumber;i++)
+//			{
+//			    var currScore = svg.select('.score');
+//				var cross = getCrossAreaByIndices(xLine, yLine, distributionsNumber, i);
+//                var classList = currScore.attr('class');
+//                var scoreRect = {
+//                    x: width,
+//                    y: cross.row.yUp,
+//                    width: (cross.column.xRight - cross.column.xLeft),
+//                    height: (cross.row.yDown - cross.row.yUp),
+//                    class: classList,
+//                    xIndex: cross.column.index,
+//                    yIndex: cross.row.index,
+//					yMid: (cross.row.yDown + cross.row.yUp)/2
+//                };
+//                renderScoreRect(scoreRect);
+//			}
+//        };
 
-			lastColumn = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //mod
-			for (i=1;i<=problemsNumber;i++)
-			{
-			    var currScore = svg.select('.score');
-				var cross = getCrossAreaByIndices(xLine, yLine, distributionsNumber, i);
-                var classList = currScore.attr('class');
-                var scoreRect = {
-                    x: width,
-                    y: cross.row.yUp,
-                    width: (cross.column.xRight - cross.column.xLeft),
-                    height: (cross.row.yDown - cross.row.yUp),
-                    class: classList,
-                    xIndex: cross.column.index,
-                    yIndex: cross.row.index,
-					yMid: (cross.row.yDown + cross.row.yUp)/2
-                };
-                renderScoreRect(scoreRect);  
-			}
-        };
-       
-///////////////////////////////////////////////////////////////////////////////////////////
         var isRightGuess = function(xIndex, yIndex) {
             return (guessingMap[yIndex] == xIndex);
         };
 
-        var wrongGuess = 0; //used to count the number of wrong guesses
-		var wrongGuessList = new Array();
-		var rightGuessList = new Array();
-		for (i=0;i<=100;i++)
-		{    
-		   wrongGuessList[i] = 0;
-		   rightGuessList[i] = 0;
-		}
-		var currentRow = -1; //hyz
+//        // TODO: what the f*** it's doing here?
+//        var wrongGuess = 0; //used to count the number of wrong guesses
+//		var wrongGuessList = [];
+//        var rightGuessList = [];
+//
+//		for(var i = 0; i <= 100; i++) {
+//		   wrongGuessList[i] = 0;
+//		   rightGuessList[i] = 0;
+//		}
+//        var currentRow = -1; //hyz
+
 		var showGuessRect = function(xLine, yLine, indices) {
 
             var cross = getCrossAreaByIndices(xLine, yLine, indices.xIndex, indices.yIndex);
@@ -696,7 +684,6 @@ var game = function() {
             }
         }
 
-		/////////////////////////////////////////////////////////////////////////////////
         var showGuessModal = function(xIndex, yIndex) {
 
             var guessModal = $('#guess-modal');
@@ -741,9 +728,7 @@ var game = function() {
                 .attr('xIndex', rect.xIndex)
                 .attr('yIndex', rect.yIndex);
         };
-		
-		
-////////////////////////////////////////////////////////Render score//////////////////////
+
         var renderScoreRect = function(rect) {
 			id = '#ScoreRect'+rect.yIndex.toString();
             svg.select(id)
@@ -751,7 +736,6 @@ var game = function() {
                 .ease('linear')
                 .delay(0)
                 .duration(0)
-               // .attr('class', rect.class)
                 .attr('x', rect.x)
                 .attr('y', rect.y)
                 .attr('width',  scoreWidth)
@@ -771,10 +755,7 @@ var game = function() {
 			    .attr('x', rect.x)
 				.attr('y', rect.yMid)//rect.y+15)
 				.text(wrongGuessList[rect.yIndex])
-
         };		
-///////////////////////////////////////////////////////////////////////////////////
-
 
         var redraw = function(xLine, yLine, xFisheye, yFisheye, xM, yM) {
 
@@ -782,31 +763,27 @@ var game = function() {
             var yMouse = yM || 0;
             xLine.attr("x1", xFisheye).attr("x2", xFisheye);
             yLine.attr("y1", yFisheye).attr("y2", yFisheye);
-            if (originalWidth != width + scoreWidth)  //check if the browser is zoomed, hardcoded so far
-			{ 
-              if (width - originalWidth >5)
-			    window.location.reload(true);
-				
-			  adjustViewport(20);
-			  originalWidth = width;
-			  renderCartesian();			
-			} 
+
+//            if (originalWidth != width + scoreWidth)  //check if the browser is zoomed, hardcoded so far
+//			{
+//              if (width - originalWidth >5)
+//			    window.location.reload(true);
+//
+//			  adjustViewport(20);
+//			  originalWidth = width;
+//			  renderCartesian();
+//			}
             
 			updateHighlighting(xLine, yLine, xMouse, yMouse);
         }
 
-        var fishline = function(d) {
-            return line(d.map(function(d) {
-                d = fisheye({x: d[0], y: d[1]});
-                return [d.x, d.y];
-            }));
-        }
-
         var renderCartesian = function() {
-			scoreWidth = width/54;
-			width -= scoreWidth; //hyz
-            var offset = 0;//hyz
-            var xSteps = d3.range(offset, width, (width - offset) / (distributionsNumber) );
+//            // TODO: what da f*** is 54?
+//			scoreWidth = width/54;
+//			width -= scoreWidth; //hyz
+
+            var offset = 0;
+            var xSteps = d3.range(offset, width, (width - offset) / distributionsNumber );
             var ySteps = d3.range(offset, height, (height - offset) / problemsNumber);
 
             var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(360),
@@ -842,27 +819,26 @@ var game = function() {
                 .attr('height', 0);
 				
 	//////////////////////////////////////Create Score Object////////////////	    
-			
-			for (i=0;i<=100;i++)
-			{				
-			  var id = 'Score' + i.toString();
-			  var id2 = 'ScoreRect' + i.toString(); 
-
-              svg.append('rect')
-                  .attr('id', id2)
-				  .attr('class', 'score')
-                  .attr('x', 0)
-                  .attr('y', 0)
-                  .attr('width', 0)
-                  .attr('height', 0);
-				  
-			  svg.append('text')
-			      .attr('id',id)
-			      .attr('class', 'scoreText')
-				  .attr('x', 0)
-				  .attr('y', 0);
-			}
-	//////////////////////////////////////////////////////////			
+//			// TODO: what the f*** is going on here? why 100???
+//			for (i=0;i<=100;i++)
+//			{
+//			  var id = 'Score' + i.toString();
+//			  var id2 = 'ScoreRect' + i.toString();
+//
+//              svg.append('rect')
+//                  .attr('id', id2)
+//				  .attr('class', 'score')
+//                  .attr('x', 0)
+//                  .attr('y', 0)
+//                  .attr('width', 0)
+//                  .attr('height', 0);
+//
+//			  svg.append('text')
+//			      .attr('id',id)
+//			      .attr('class', 'scoreText')
+//				  .attr('x', 0)
+//				  .attr('y', 0);
+//			}
 
             svg.append('text')
                 .attr('class', 'distribution pointer-text')
@@ -887,84 +863,94 @@ var game = function() {
                 .attr("x2", width);
 
             redraw(xLine, yLine, xFisheye, yFisheye);
-            addListeners(xLine, yLine, xFisheye, yFisheye);
+            addGraphListeners(xLine, yLine, xFisheye, yFisheye);
         }
 
-        var renderFisheye = function() {
+        var isProblemNumValid = function(newProblemNum) {
+            var numberOnly = /^\d+$/;
+            return (numberOnly.test(newProblemNum) &&
+                parseInt(newProblemNum) > 0 &&
+                parseInt(newProblemNum) <= problems.length)
+        };
 
-            var offset = 0;
-            var xStepsBig = d3.range(offset, width, (width - offset) / problemsNumber);
-            var yStepsBig = d3.range(offset, height, (height - offset) / problemsNumber);
-            var xStepsSmall = d3.range(offset, width + 6, (width - offset) / (2 * problemsNumber));
-            var yStepsSmall = d3.range(offset, height + 6, (width - offset) / (2 * problemsNumber));
+        var updateProblemNum = function(newProblemNum) {
 
-            var fisheye = d3.fisheye.circular()
-                .focus([360, 90])
-                .radius(100);
+            if(isProblemNumValid(newProblemNum)) {
+                problemsNumber = newProblemNum;
+                createGraph();
+            } else {
+                $('#problemNum').tooltip('show');
+                setTimeout(function() {
+                    $('#problemNum').tooltip('hide');
+                }, 3000);
+            }
+        };
 
-            var line = d3.svg.line();
+        // Set listeners to object outside graph
+        var addControlsListeners = function() {
 
-            svg.append("g")
-                .attr("transform", "translate(-.5,-.5)");
+            var waitForInputStop = (function() {
 
-            svg.append("rect")
-                .attr("class", "background")
-                .attr("width", width)
-                .attr("height", height);
+                var typeOut;
 
-//            svg.insert('rect', 'background')
-//                .attr('class', 'highlight column')
-//                .attr('x', 0)
-//                .attr('y', 0)
-//                .attr('width', 0)
-//                .attr('height', 0);
-//
-//            svg.insert('rect', 'background')
-//                .attr('class', 'highlight row')
-//                .attr('x', 0)
-//                .attr('y', 0)
-//                .attr('width', 0)
-//                .attr('height', 0);
-//
-//            svg.append('rect')
-//                .attr('class', 'guess')
-//                .attr('x', 0)
-//                .attr('y', 0)
-//                .attr('width', 0)
-//                .attr('height', 0);
-//
-//            svg.append('text')
-//                .attr('class', 'distribution pointer-text')
-//                .attr('x', 0)
-//                .attr('y', 0);
-//
-//            svg.append('text')
-//                .attr('class', 'problem pointer-text')
-//                .attr('x', 0)
-//                .attr('y', 0);
+                function clearTimer() {
+                    if (typeOut) {
+                        clearTimeout(typeOut);
+                    }
+                }
 
-            svg.selectAll(".x")
-                .data(xStepsBig)
-                .enter().append("path")
-                .attr("class", "x")
-                .datum(function(x) { return yStepsSmall.map(function(y) { return [x, y]; }); });
+                function startTimer(obj) {
+                    clearTimer(obj);
 
-            svg.selectAll(".y")
-                .data(yStepsBig)
-                .enter().append("path")
-                .attr("class", "y")
-                .datum(function(y) { return xStepsSmall.map(function(x) { return [x, y]; }); });
+                    typeOut = setTimeout(function () {
+                        // TODO: recreate graph with new number of problems
+                        updateProblemNum(obj.val());
+                    }, 500);
+                }
 
-            var path = svg.selectAll("path")
-                .attr("d", fishline);
+                return {
+                    clearTimer: clearTimer,
+                    startTimer: startTimer
+                }
+            })();
 
-//            addListeners(xLine, yLine, xFisheye, yFisheye);
-        }
+            var waitForFinalEvent = (function () {
+                var timers = {};
+                return function (callback, ms, uniqueId) {
+                    if (!uniqueId) {
+                        uniqueId = "Don't call this twice without a uniqueId";
+                    }
+                    if (timers[uniqueId]) {
+                        clearTimeout (timers[uniqueId]);
+                    }
+                    timers[uniqueId] = setTimeout(callback, ms);
+                };
+            })();
 
-        var addListeners = function(xLine, yLine, xFisheye, yFisheye) {
+            $(window).resize(function() {
+                waitForFinalEvent(function() {
+                    createGraph();
+                }, 500, "some unique string");
+            });
+
+            $('#problemNum')
+                .keydown(waitForInputStop.clearTimer)
+                .keyup(function() { waitForInputStop.startTimer($(this)); })
+                .focus()
+                .tooltip({
+                    'selector': '',
+                    'delay': { show: 500, hide: 100 },
+                    'title': 'Enter number from 1 to ' + problems.length
+                });
+        };
+
+        // Set listeners to objects inside graph
+        var addGraphListeners = function(xLine, yLine, xFisheye, yFisheye) {
+
             svg.on("mousemove", function() {
-                var temp = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //mod
-				var mouse = d3.mouse(this); if (mouse[0] > temp) mouse[0] = temp; //fixmouse
+//                var temp = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //mod
+				var mouse = d3.mouse(this);
+//                if (mouse[0] > temp) mouse[0] = temp; //fixmouse
 
                 xFisheye.focus(mouse[0]);
                 yFisheye.focus(mouse[1]);
@@ -972,10 +958,11 @@ var game = function() {
             });
 
             svg.on('click', function() {
+                console.log('click');
                 var mouse = d3.mouse(this);
                 guess(xLine, yLine, mouse);
             });
-        }
+        };
 
         return {
             renderData: init
@@ -1001,7 +988,6 @@ var game = function() {
                 return false;
 
             switch(event.msg) {
-
                 case 'problems_loaded' :
                     problems = event.data;
                     processData();
@@ -1017,11 +1003,7 @@ var game = function() {
                     break;
 
                 default:
-                    try {
-                        console.log('Callback was not mapped.');
-                    } catch(e) {
-                        window.alert('Callback was not mapped. Console is unavailable.');
-                    }
+                    console.log('Callback was not mapped.');
                     break;
             }
 
@@ -1037,6 +1019,8 @@ var game = function() {
                 var slopegraph = document.getElementById('slopegraph');
                 if(slopegraph)
                     slopegraph.innerHTML = '<h1>D3js cannot bo loaded. Check Internet connection.</h1>';
+                else
+                    console.log('There is no container for graphics in html. It should have class .slopegraph');
             }
         };
 
@@ -1051,7 +1035,7 @@ var game = function() {
 
         var processData = function() {
             if(problems && distributions)
-                DataProcessor.getDataForGraph(problems, distributions);
+                DataProcessor.prepareDataForGraph(problems, distributions);
         };
 
         var renderData = function(data) {
@@ -1065,6 +1049,4 @@ var game = function() {
     })();
 
     return { start : Core.init() }
-}
-
-window.onload=game();
+} ());

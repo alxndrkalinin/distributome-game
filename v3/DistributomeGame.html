@@ -13,6 +13,7 @@
     <script type="text/javascript" src="./scripts/jquery.js"></script>
     <script type="text/javascript" src="./scripts/xml2json.js"></script>
     <script type="text/javascript" src="./scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./scripts/bootstrap-popover.js"></script>
     <script type="text/javascript" src="./scripts/d3.v2.js"></script>
 
     <script type="text/javascript" src="./scripts/url.js"></script>
@@ -46,21 +47,6 @@
         });
     </script>
 
-    <script> <!-- redircet page -->
-    function redir() {
-        currentNum = $('#num').val();
-        if (parseInt(currentNum) > 0 && parseInt(currentNum) <= 20)
-            window.location.replace('/v3/DistributomeGame.html?problemNum=' + currentNum + '&simplify=' + $('#simp').prop('checked'));
-    }
-    </script>
-
-
-    <script type="text/javascript">   <!-- Set focus -->
-    $(document).ready(function () {
-        $("#num").focus();
-    });
-    </script>
-
 </head>
 <body>
 
@@ -75,7 +61,7 @@
             -->
             <li id="game"><a href="/game"
                              title="Distributome Home Page">Distributome Game</a></li>
-            <li id='instructions'><a href="/instructions"
+            <li id='instructions' class="instruction"><a href="/instructions"
                                      title="How to play the Distributome Game">Instructions</a></li>
             <li>&nbsp;</li>
             <li><a href="http://www.distributome.org/about.html"
@@ -171,8 +157,8 @@
         <div class="game-data">
             <div class="row-fluid">
                 <div class="span12">
-                    <div class="row-fluid descriptions">
-                        <div class="span5">
+                    <div class="row-fluid">
+                        <div class="span5 descriptions">
                             <h4>Problem Description</h4>
 
                             <div id='problemDescription' class='problem-description'></div>
@@ -183,19 +169,19 @@
                             <div id='distributionDescription' class='distribution-description'></div>
                         </div>
                         <div class="span2">
-                            <div style='font-size:15'>
+                            <div>
 
                                 <div class="example">
-                                    <div class="label" style="width:45%">Click to toggle</div>
-                                    <div id="demo2" class="demo">00:00:00</div>
+                                    <div class="label">Click to toggle</div>
+                                    <div id="demo2">00:00:00</div>
                                 </div>
 
-                                <div class="label" style="width:50%">Problem Number</div>
+                                <div class="label">Problem Number</div>
 
-                                <input name='problemNum' id='num' type="text" style="width:20%" onKeyUp="redir()"/>
+                                <input id='problemNum' rel='tooltip' name='problemNum' type='text'/>
 
-                                <div class="label" style="width:30%">Simplify
-                                    <input name='simplified' id='simp' type="checkbox" onClick="redir()"/>
+                                <div class="label">Simplify
+                                    <input name='simplified' type="checkbox"/>
                                 </div>
 
                             </div>
@@ -207,19 +193,6 @@
                                 <div id='scores'></div>
                             </div>
                         </div>
-                        <!-- div class="row">
-                           <div class="span3">
-                               <h4>Distortion mode:</h4>
-                           </div>
-                           <div class="span3">
-                               <div class="btn-group">
-                                   <input type="radio" name="radios" id="radio-fisheye" />
-                                   <label class="btn" for="radio-fisheye">Fisheye</label>
-                                   <input type="radio" name="radios" id="radio-cartesian" />
-                                   <label class="btn" for="radio-cartesian">Cartesian</label>
-                               </div>
-                           </div>
-                       </div -->
                     </div>
                 </div>
             </div>
