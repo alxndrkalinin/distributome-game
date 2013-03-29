@@ -274,6 +274,7 @@
         var guessingMap = [];
         var problemsNumber;
         var distributionsNumber;
+        var isSimpleMode = false;
 
         // TODO: make a custom function instead of changing String
         jQuery.extend (String.prototype, {
@@ -344,6 +345,8 @@
             svg = d3.select('#slopegraph').append('svg')
                 .attr('width', width)
                 .attr('height', height);
+
+            if(isSimpleMode) {}
 
             renderCartesian();
         }
@@ -659,12 +662,11 @@
             var xMouse = mouse[0] || 0;
             var yMouse = mouse[1] || 0;
 
-            temp = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //hyz boundry condition
-            if (xMouse >= temp) return -1; // hyz
+//            temp = getCrossAreaByIndices(xLine, yLine, distributionsNumber, 1).column.xRight; //hyz boundry condition
+//            if (xMouse >= temp) return -1; // hyz
 
             var guessClassList = svg.select('.guess').attr('class');
             var indices = getIndicesByCoordinate(xLine, yLine, xMouse, yMouse);
-			
 
             // select cell, if nothing is selected
             if(guessClassList.indexOf('wrong') == -1 && guessClassList.indexOf('right') == -1) {
@@ -877,6 +879,8 @@
 
             if(isProblemNumValid(newProblemNum)) {
                 problemsNumber = newProblemNum;
+                if(isSimpleMode)
+                    distributionsNumber = newProblemNum;
                 createGraph();
             } else {
                 $('#problemNum').tooltip('show');
@@ -884,6 +888,33 @@
                     $('#problemNum').tooltip('hide');
                 }, 3000);
             }
+        };
+
+        var shrinkDistributions = function() {
+            var vacantRightIndex = 0;
+            var temp;
+            for(var i = 0; i < distributions.length; i++) {
+                var indexInMap = guessingMap.indexOf(distributions[i]);
+                if(indexInMap > -1) {
+                    temp = distributions[vacantRightIndex];
+                    distributions[vacantRightIndex] = distributions[i];
+                    distributions[i] = distributions[vacantRightIndex];
+                    guessingMap[indexInMap] = vacantRightIndex;
+                    vacantRightIndex++;
+                }
+            }
+        }
+
+        var toggleSimpleMode = function() {
+            if(!isSimpleMode) {
+                isSimpleMode = true;
+                shrinkDistributions();
+                distributionsNumber = problemsNumber;
+            } else {
+                isSimpleMode = false;
+                distributionsNumber = distributions.length;
+            }
+            createGraph();
         };
 
         // Set listeners to object outside graph
@@ -942,6 +973,15 @@
                     'delay': { show: 500, hide: 100 },
                     'title': 'Enter number from 1 to ' + problems.length
                 });
+
+            $('#isSimpleMode').live('change', function(){
+//                if($(this).is(':checked')){
+//                    isSimpleMode = true;
+//                } else {
+//                    isSimpleMode = false;
+//                }
+                toggleSimpleMode();
+            });
         };
 
         // Set listeners to objects inside graph
