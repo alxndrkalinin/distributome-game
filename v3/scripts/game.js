@@ -251,7 +251,8 @@
         };
 
         return {
-            prepareDataForGraph : prepareDataForGraph
+            prepareDataForGraph : prepareDataForGraph,
+            shuffleArray: fisherYatesShuffle
         }
     })();
 
@@ -284,6 +285,12 @@
                 }).replace(/\s+/g, '');
             }
         });
+
+        Array.prototype.remove = function(from, to) {
+            var rest = this.slice((to || from) + 1 || this.length);
+            this.length = from < 0 ? this.length + from : from;
+            return this.push.apply(this, rest);
+        };
 
         var init = function(data) {
 
@@ -346,7 +353,12 @@
                 .attr('width', width)
                 .attr('height', height);
 
-            if(isSimpleMode) {}
+            if(isSimpleMode) {
+                var activeDistribs = distributions.slice(0, distributionsNumber);
+                activeDistribs = DataProcessor.shuffleArray(activeDistribs);
+                for(var i = 0; i < distributionsNumber; i++)
+                    distributions[i] = activeDistribs[i];
+            }
 
             renderCartesian();
         }
@@ -891,16 +903,14 @@
         };
 
         var shrinkDistributions = function() {
-            var vacantRightIndex = 0;
             var temp;
             for(var i = 0; i < distributions.length; i++) {
-                var indexInMap = guessingMap.indexOf(distributions[i]);
+                var indexInMap = guessingMap.indexOf(i);
                 if(indexInMap > -1) {
-                    temp = distributions[vacantRightIndex];
-                    distributions[vacantRightIndex] = distributions[i];
-                    distributions[i] = distributions[vacantRightIndex];
-                    guessingMap[indexInMap] = vacantRightIndex;
-                    vacantRightIndex++;
+                    temp = distributions[indexInMap];
+                    distributions[indexInMap] = distributions[i];
+                    distributions[i] = distributions[indexInMap];
+                    guessingMap[indexInMap] = indexInMap;
                 }
             }
         }
@@ -967,12 +977,12 @@
             $('#problemNum')
                 .keydown(waitForInputStop.clearTimer)
                 .keyup(function() { waitForInputStop.startTimer($(this)); })
-                .focus()
                 .tooltip({
                     'selector': '',
                     'delay': { show: 500, hide: 100 },
                     'title': 'Enter number from 1 to ' + problems.length
-                });
+                })
+                .focus();
 
             $('#isSimpleMode').live('change', function(){
 //                if($(this).is(':checked')){
