@@ -66,10 +66,10 @@ body {
 .guess {
     border: #000 2px;
 }
-/*hyz*/
+
 .score {
     border: #000 2px;
-	fill: none;
+	fill: #f5f5f5;
 }
 
 .scoreRight {
