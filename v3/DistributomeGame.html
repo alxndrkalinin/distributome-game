@@ -7,20 +7,13 @@
     <meta http-equiv="Cache-Control" content="no-store"/>
 
     <link type="text/css" href="./data/bootstrap.min.css" rel='stylesheet'/>
+    <link href="./data/bootstrapSwitch.css" rel="stylesheet">
+    <link rel="stylesheet" href="./data/font-awesome.min.css">
     <link type="text/css" href="./basic/DistributomeNavigator_V3.css" rel="stylesheet"/>
     <link type="text/css" href="./data/game.css" rel='stylesheet'/>
-
-    <script type="text/javascript" src="./scripts/jquery.js"></script>
-    <script type="text/javascript" src="./scripts/xml2json.js"></script>
-    <script type="text/javascript" src="./scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./scripts/bootstrap-popover.js"></script>
-    <script type="text/javascript" src="./scripts/d3.v2.js"></script>
-
-    <script type="text/javascript" src="./scripts/url.js"></script>
-
-    <script src="./scripts/jquery.stopwatch.js"></script>
-    <script type="text/javascript" src="./scripts/fisheye.js"></script>
-    <script type="text/javascript" src="./scripts/game.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 
     <script type="text/javascript"
             src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -46,6 +39,17 @@
         });
     </script>
 
+    <script type="text/javascript" src="./scripts/jquery.js"></script>
+    <script type="text/javascript" src="./scripts/xml2json.js"></script>
+    <script type="text/javascript" src="./scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./scripts/bootstrap-popover.js"></script>
+    <script src="./scripts/bootstrapSwitch.js"></script>
+    <script type="text/javascript" src="./scripts/d3.v2.js"></script>
+
+    <script type="text/javascript" src="./scripts/url.js"></script>
+
+    <script src="./scripts/jquery.stopwatch.js"></script>
+    <script type="text/javascript" src="./scripts/fisheye.js"></script>
 </head>
 <body>
 
@@ -158,38 +162,40 @@
                 <div class="span12">
                     <div class="row-fluid">
                         <div class="span5 descriptions">
-                            <h4>Problem Description</h4>
+                            <h4 class="description-header">Problem Description</h4>
 
                             <div id='problemDescription' class='problem-description'></div>
                         </div>
                         <div class="span5">
-                            <h4>Distribution Description</h4>
+                            <h4 class="description-header">Distribution Description</h4>
 
                             <div id='distributionDescription' class='distribution-description'></div>
                         </div>
                         <div class="span2">
-                            <div>
-
-                                <div class="example">
-                                    <div class="label">Click to toggle</div>
-                                    <div id="demo2">00:00:00</div>
+                            <div class="hero-unit timer-group">
+                                <div>
+                                    <div id="countUp" class="countup-digits">00:00:00</div>
+                                    <div class="form-actions game-control">
+                                        <button id="startButton" class="btn btn-mini btn-info" type="button"><i class="icon-play"></i> Start</button>
+                                        <button id="resetButton" class="btn btn-mini btn-danger" type="button"><i class="icon-refresh"></i> Reset</button>
+                                    </div>
                                 </div>
-
-                                <div class="label">Problem Number</div>
-
-                                <input id='problemNum' rel='tooltip' name='problemNum' type='text'/>
-
-                                <div class="label">Simplify
-                                    <input id='isSimpleMode'  name='simplified' type="checkbox"/>
+                                <div class="form-actions problems-control">
+                                    <div class="label problems-control-label">Problems Number &nbsp;</div>
+                                    <input id='problemNum' class="input-mini problems-input" rel='tooltip' name='problemNum' type='text'/>
+                                    <div></div>
+                                    <div class="label problems-control-label">Simple Mode &nbsp;
+                                    </div>
+                                    <div class="switch switch-mini" data-on="info">
+                                        <input id='isSimpleMode' type="checkbox" checked/>
+                                    </div>
                                 </div>
-
                             </div>
                         </div>
                         <div class="row notmargined">
                             <div class="span12">
                                 <div id='slopegraph' class="slopegraph">
                                 </div>
-                                <div id='scores'></div>
                             </div>
                         </div>
                     </div>
@@ -198,5 +204,6 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="./scripts/game.js"></script>
 </body>
 </html>

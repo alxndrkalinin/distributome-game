@@ -6,17 +6,32 @@ body {
     overflow: auto;
 }
 
+.mainmenu {
+    min-width: 1000px;
+}
+
 .mainmenu #game {
     font-size: 1.5em;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
     padding: 0px 60px 0px 27px;
     margin: 0;
     border: none;
+    padding-top: 3px;
 }
 
 .mainmenu > #instructions > a {
     font-size: 1.15em;
-    color: #badffa;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    color: #71c1d8;
     border: none;
+}
+
+.mainmenu li a {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    padding-top: 4px;
 }
 
 .notmargined {
@@ -61,13 +76,14 @@ body {
 
 .pointer-text {
     font: 1em bold;
+    font-family: 'Droid Sans', sans-serif;
 }
 
-.guess {
+.guess-rect {
     border: #000 2px;
 }
 
-.score {
+.score-rect {
     border: #000 2px;
 	fill: #f5f5f5;
 }
@@ -80,9 +96,60 @@ body {
     border: #000 2px;
 	fill: #F03;    
 }
-.scoreText{
-    font: 1em bold;
+.score-text{
+    font: 0.8em bold;
+    font-family: 'Droid Sans', sans-serif;
 }
+
+.timer-group {
+    padding: 10px;
+}
+
+.countup-digits {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 2em;
+    display: inline-block;
+}
+
+.game-control {
+    display: inline-block;
+    padding: 3px 3px 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.timer-label {
+    font-family: 'Droid Sans', sans-serif;;
+    font-size: 1em;
+    border: 1px;
+    background-color: #eee;
+    color: #000000;
+}
+
+.problems-control-label {
+    font-family: 'Droid Sans', sans-serif;;
+    font-size: 1em;
+    background-color: #f5f5f5;
+    color: #000000;
+    display: inline-block;
+}
+
+.problems-control {
+    display: inline-block;
+    padding: 1px 1px 1px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.problems-input {
+    margin-top: 5px;
+}
+
+.switch label {
+    margin: 0px;
+}
+
 /*----*/
 .right {
     fill: #66CD00;
@@ -94,11 +161,17 @@ body {
 
 .distribution-description {
     min-height: 100px;
-
+    font-family: 'Droid Sans', sans-serif;
 }
 
 .problem-description {
     min-height: 100px;
+    font-family: 'Droid Sans', sans-serif;
+}
+
+.description-header {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
 }
 
 .nondisplay {
