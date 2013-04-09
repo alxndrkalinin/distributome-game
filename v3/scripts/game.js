@@ -1,6 +1,6 @@
 (function() {
 
-    var PROBLEMS_URL = './data/DistributomeGame_ProblemExamples_Nov_2012.csv';
+    var PROBLEMS_URL = './data/DistributomeGame_ProblemExamples.csv';
     var DISTRIBUTIONS_URL = './data/Distributome.xml';
 
     /**
@@ -260,10 +260,10 @@
     /**
      * Renders data.
      */
-    var DataRenderer = (function() {
+    var Rendering = (function() {
 
-        var svg;    // graph area element
-        var QUEUE = MathJax.Hub.queue;
+        // graph area dom element
+        var svg;
 
         var DEFAULT_WIDTH = 500;
         var DEFAULT_HEIGHT = 300;
@@ -273,6 +273,7 @@
         var margins = 20;
         var scoreColumnWidthPercent = 2 / 100;
 
+        // initial game settings
         var isSimpleMode = true;
         var initialProblemNum = 8;
 
@@ -362,9 +363,8 @@
                     .replace(/[^a-z]/g,'');
             });
 
-            for(var i = 0; i < problemsNumber; i++) {
+            for(var i = 0; i < problemsNumber; i++)
                 guessingMap[i] = jQuery.inArray(problems[i].distribution.toLowerCase().replace(/[^a-z]/g,''), distributionNames);
-            }
         }
 
         function coord(line, axis) {
@@ -468,10 +468,8 @@
         var updateDescriptions = function(distributionIndex, problemIndex) {
             $('#problemDescription').text(problems[problemIndex].description);
             $('#distributionDescription').text(distributions[distributionIndex].description);
-            var math1 = document.getElementById("problemDescription");
-            var math2 = document.getElementById("distributionDescription");
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub,math1]);
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub,math2]);
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById("problemDescription")]);
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById("distributionDescription")]);
         }
 
         var highlight = function(area) {
@@ -825,23 +823,21 @@
 
         var shrinkDistributions = function () {
             var temp;
-            for (var i = 0; i < distributions.length; i++) {
-                var indexInMap = guessingMap.indexOf(i);
-                if (indexInMap > -1) {
-                    temp = distributions[indexInMap];
-                    distributions[indexInMap] = distributions[i];
-                    distributions[i] = distributions[indexInMap];
-                    guessingMap[indexInMap] = indexInMap;
+            for(var i = 0; i < problemsNumber; i++) {
+                if(guessingMap[i] !== i) {
+                    temp = distributions[guessingMap[i]];
+                    distributions[guessingMap[i]] = distributions[i];
+                    distributions[i] = temp;
+
+                    prepareGuessingMap();
                 }
             }
         };
 
         var toggleSimpleMode = function() {
-            if(!isSimpleMode) {
+            if(!isSimpleMode)
                 isSimpleMode = true;
-                shrinkDistributions();
-                distributionsNumber = problemsNumber;
-            } else {
+            else {
                 isSimpleMode = false;
                 distributionsNumber = distributions.length;
             }
@@ -852,8 +848,8 @@
         var addControlsListeners = function() {
 
             var startButton = $('#startButton');
-            var startHtml = '<i class="icon-play"></i> Start';
-            var pauseHtml = '<i class="icon-pause"></i> Pause';
+            var startHtml = '<i class="icon-play"></i> START';
+            var pauseHtml = '<i class="icon-pause"></i> PAUSE';
 
             var waitForInputStop = (function() {
 
@@ -922,7 +918,7 @@
             });
 
             $('#resetButton').click(function() {
-                $('#countUp').stopwatch('reset').stopwatch('stop').text('00:00:00');
+                $('#countUp').stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
                 startButton.html(startHtml);
                 createGraph();
             });
@@ -1022,7 +1018,7 @@
         };
 
         var renderData = function(data) {
-            DataRenderer.renderData(data);
+            Rendering.renderData(data);
         };
 
         return {

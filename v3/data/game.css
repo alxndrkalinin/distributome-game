@@ -51,6 +51,26 @@ body {
     margin: 20px;
 }
 
+.modal-header {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+}
+
+.modal-body {
+    min-height: 100px;
+    font-family: 'Droid Sans', sans-serif;
+}
+
+.btn {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
+.switch {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
 .slopegraph {
     width: 940px;
     height: 500px;
@@ -75,7 +95,7 @@ body {
 }
 
 .pointer-text {
-    font: 1em bold;
+    font: 1.2em bold;
     font-family: 'Droid Sans', sans-serif;
 }
 
