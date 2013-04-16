@@ -170,6 +170,10 @@ body {
     margin: 0px;
 }
 
+.resultsTable thead tr th {
+    font-family: 'Ubuntu', sans-serif;
+}
+
 /*----*/
 .right {
     fill: #66CD00;

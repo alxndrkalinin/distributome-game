@@ -85,7 +85,7 @@
         <div id='instructions-modal' class="modal hide fade">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Welcome to Distributome Game!</h3>
+                <h3>Welcome to the Distributome Game!</h3>
             </div>
             <div class="modal-body">
                 <h4>Instructions</h4>
@@ -124,7 +124,36 @@
             </div>
             <div class="modal-footer">
                 <a id="startGameButton" href="#" class="btn btn-danger" data-dismiss='modal'><i class="icon-play"></i> START</a>
-                <a id="resumeGameButton" href="#" class="btn btn-info hide" data-dismiss='modal'>CLOSE</a>
+                <a id="closeInstructionsButton" href="#" class="btn btn-info hide" data-dismiss='modal'>CLOSE</a>
+            </div>
+        </div>
+        <div id='results-modal' class="modal hide fade">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Game Summary</h3>
+            </div>
+            <div class="modal-body">
+                <h4>Time spent</h4>
+                <p id="resultTime" class="countup-digits">00:00:00</p>
+                <h4>Results</h4>
+                <table class="table resultsTable">
+                    <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Wrong guesses</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                    </tbody>
+                </table>
+                <a id="printResultsButton" href="#" class="btn btn-primary"><i class="icon-print"></i> Print results</a>
+                <p></p>
+                <p class="pull-right">Close this window to reset the game.</p>
+            </div>
+            <div class="modal-footer">
+                <a id="resumeGameButton" href="#" class="btn btn-info"><i class="icon-reply"></i> Resume</a>
+                <a href="#" class="btn btn-danger" data-dismiss='modal'><i class="icon-refresh"></i> Reset</a>
             </div>
         </div>
         <div id='guess-modal' class="modal hide fade">
@@ -175,14 +204,14 @@
                                 <div>
                                     <div id="countUp" class="countup-digits">00:00:00</div>
                                     <div class="form-actions game-control">
-                                        <button id="startTimerButton" class="btn btn-mini btn-info hide" type="button">
+                                        <button id="startTimerButton" class="btn btn-mini btn-info" type="button">
                                             <i class="icon-play"></i> START
                                         </button>
-                                        <button id="pauseTimerButton" class="btn btn-mini btn-info" type="button">
+                                        <button id="pauseTimerButton" class="btn btn-mini btn-info hide" type="button">
                                             <i class="icon-pause"></i> PAUSE
                                         </button>
-                                        <button id="resetButton" class="btn btn-mini btn-danger" type="button">
-                                            <i class="icon-refresh"></i> RESET
+                                        <button id="stopButton" class="btn btn-mini btn-danger" type="button">
+                                            <i class="icon-stop"></i> STOP
                                         </button>
                                     </div>
                                 </div>

@@ -321,7 +321,7 @@
                 $('#pauseTimerButton').removeClass('hide');
                 $('#startTimerButton').addClass('hide');
                 $('#startGameButton').addClass('hide');
-                $('#resumeGameButton').removeClass('hide');
+                $('#closeInstructionsButton').removeClass('hide');
                 instructionsModal.off('hide');
                 $('#problemNum').focus();
             });
@@ -596,7 +596,8 @@
             } else {
                 scoreColumnData[cross.row.index].class = 'score-rect wrong';
                 if(scoreRect.attr('class').indexOf('right') > -1) {
-                    if(!((scoreRect.attr('class').indexOf('wrong') > -1) && guessData[guessIndex].xIndex == cross.row.index))
+                    if(!((scoreRect.attr('class').indexOf('wrong') > -1)
+                        && guessData[guessIndex].xIndex == cross.row.index))
                         scoreColumnData[cross.row.index].score = 1;
                 } else
                     scoreColumnData[cross.row.index].score += 1;
@@ -847,11 +848,42 @@
             }
         };
 
+        var getGuessesSummary = function() {
+            var guessRects = d3.selectAll('.guess-rect')[0];
+            var guessRect;
+            var problemWrongGuesses;
+            var isSolved;
+            var attemptedProblems = [];
+            for(var k = 0; k < problemsNumber; k++) {
+                isSolved = false;
+                problemWrongGuesses = 0;
+                for(var j = 0; j < distributionsNumber; j++) {
+                    guessRect = d3.selectAll('.guess-rect').filter(function(d, i) { return i == k * distributionsNumber + j; })
+                    if(guessRect.attr('class').indexOf('right') > -1) {
+                        isSolved = true;
+                    } else if(guessRect.attr('class').indexOf('wrong') > -1) {
+                        problemWrongGuesses += 1;
+                    }
+                }
+                if(problemWrongGuesses !== 0 || isSolved === true)
+                attemptedProblems.push({
+                    name: problems[k].name,
+                    isSolved: isSolved,
+                    problemWrongGuesses: problemWrongGuesses
+                });
+            }
+
+            return attemptedProblems;
+        };
+
         // Set listeners to graph controls group
         var addControlsListeners = function() {
 
+            var isResume = false;
+
             var startTimerBtn = $('#startTimerButton');
             var pauseTimerBtn = $('#pauseTimerButton');
+            var countUpDiv = $('#countUp');
 
             var waitForInputStop = (function() {
 
@@ -869,9 +901,8 @@
                     typeOut = setTimeout(function () {
                         // TODO: recreate graph with new number of problems
                         updateProblemNum(obj.val());
-                        // TODO: create reset graph function
-                        $('#resetButton').click();
-
+                        resetTimer();
+                        createGraph();
                     }, 500);
                 }
 
@@ -895,13 +926,13 @@
             })();
 
             var toggleTimer = function() {
-                $('#countUp').stopwatch().stopwatch('toggle');
+                countUpDiv.stopwatch().stopwatch('toggle');
                 (startTimerBtn.hasClass('hide')) ? startTimerBtn.removeClass('hide') : startTimerBtn.addClass('hide');
                 (pauseTimerBtn.hasClass('hide')) ? pauseTimerBtn.removeClass('hide') : pauseTimerBtn.addClass('hide');
             };
 
             var resetTimer = function() {
-                $('#countUp').stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
+                countUpDiv.stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
                 if(startTimerBtn.hasClass('hide')) {
                     startTimerBtn.removeClass('hide');
                     pauseTimerBtn.addClass('hide');
@@ -927,7 +958,7 @@
                 waitForFinalEvent(function() {
                     var saveData = true;
                     createGraph(saveData);
-                }, 500, "some unique string");
+                }, 500, "0a1edaaa-3f4e-4a23-8bc2-7f6e1a5f35b0");
             });
 
             $('#problemNum')
@@ -938,13 +969,11 @@
                     'delay': { show: 500, hide: 100 },
                     'title': 'Enter number from 1 to ' + problems.length
                 });
-
             $('#isSimpleMode').live('change', function() {
                 toggleSimpleMode();
                 resetTimer();
                 createGraph();
             });
-
             $('#hideDistrInfo').live('change', function() {
                 toggleDistribInfo();
                 resetTimer();
@@ -954,9 +983,42 @@
             startTimerBtn.click(toggleTimer);
             pauseTimerBtn.click(toggleTimer);
 
-            $('#resetButton').click(function() {
-                resetTimer();
-                createGraph();
+            $('#stopButton').click(function() {
+                countUpDiv.stopwatch().stopwatch('stop');
+                startTimerBtn.removeClass('hide');
+                (pauseTimerBtn.hasClass('hide')) ? void(0) : pauseTimerBtn.addClass('hide');
+                $('#results-modal').modal('show');
+                $('#resultTime').text(countUpDiv.text());
+
+                var resultsTableBody = $('#resultsTableBody');
+                resultsTableBody.html('');
+                var attemptedGuesses = getGuessesSummary();
+                var html = '';
+                for(var i = 0; i < attemptedGuesses.length; i++) {
+
+                    html = '<tr class="' + ((attemptedGuesses[i].isSolved) ? 'success' : 'error') + '">'
+                        + '<td>' + attemptedGuesses[i].name + '</td>'
+                        + '<td>' + attemptedGuesses[i].problemWrongGuesses + '</td>'
+                        + '<td>' + ((attemptedGuesses[i].isSolved) ? 'Solved' : 'Not solved') + '</td>'
+                        + '</tr>';
+
+                    resultsTableBody.append(html);
+                }
+            });
+            $('#results-modal').on('hide', function(a, b) {
+                if(!isResume) {
+                    resetTimer();
+                    createGraph();
+                } else
+                    isResume = false;
+            });
+            $('#printResultsButton').click(function() { window.print(); });
+            $('#resumeGameButton').click(function() {
+                isResume = true;
+                $('#results-modal').modal('hide');
+                pauseTimerBtn.removeClass('hide');
+                startTimerBtn.addClass('hide');
+                countUpDiv.stopwatch().stopwatch('start');
             });
         };
 
