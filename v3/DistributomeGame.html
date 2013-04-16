@@ -85,9 +85,10 @@
         <div id='instructions-modal' class="modal hide fade">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Instructions</h3>
+                <h3>Welcome to Distributome Game!</h3>
             </div>
             <div class="modal-body">
+                <h4>Instructions</h4>
                 <p>There are uncountably many different processes and only a small finite number of
                     well-described probability models. One can gain intuition about the varieties of
                     different processes and the characteristics of different probability distributions
@@ -114,16 +115,16 @@
                         highlight a matching problem-distribution pair. Correct or incorrect matches are
                         indicated by green and red cell background coloring, respectively.
                     </li>
-                    <li><b>Clicking</b> on a highlighted cell provides access to appropriate <a target="_blank tab"
-                                                                                                href="http://www.distributome.org/tools.html">Distributome
-                        tools</a> for the
-                        selected distribution and optional hints for solving the problem.
+                    <li><b>Clicking</b> on a highlighted cell provides access to appropriate
+                        <a target="_blank tab" href="http://www.distributome.org/tools.html">Distributome tools</a>
+                        for the selected distribution and optional hints for solving the problem.
                     </li>
                 </ul>
                 <p>Enjoy the Distributome Game!</p>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss='modal'>Close</a>
+                <a id="startGameButton" href="#" class="btn btn-danger" data-dismiss='modal'><i class="icon-play"></i> START</a>
+                <a id="resumeGameButton" href="#" class="btn btn-info hide" data-dismiss='modal'>CLOSE</a>
             </div>
         </div>
         <div id='guess-modal' class="modal hide fade">
@@ -161,33 +162,44 @@
             <div class="row-fluid">
                 <div class="span12">
                     <div class="row-fluid">
-                        <div class="span5 descriptions">
+                        <div id="problem-description-block" class="span7">
                             <h4 class="description-header">Problem Description</h4>
-
-                            <div id='problemDescription' class='problem-description'></div>
+                            <div id="problemDescription" class="problem-description"></div>
                         </div>
-                        <div class="span5">
+                        <div id="distr-description-block" class="span5 hide">
                             <h4 class="description-header">Distribution Description</h4>
-
-                            <div id='distributionDescription' class='distribution-description'></div>
+                            <div id="distributionDescription" class="distribution-description"></div>
                         </div>
-                        <div class="span2">
+                        <div id="timer-block" class="span5">
                             <div class="hero-unit timer-group">
                                 <div>
                                     <div id="countUp" class="countup-digits">00:00:00</div>
                                     <div class="form-actions game-control">
-                                        <button id="startButton" class="btn btn-mini btn-info" type="button"><i class="icon-play"></i> START</button>
-                                        <button id="resetButton" class="btn btn-mini btn-danger" type="button"><i class="icon-refresh"></i> RESET</button>
+                                        <button id="startTimerButton" class="btn btn-mini btn-info hide" type="button">
+                                            <i class="icon-play"></i> START
+                                        </button>
+                                        <button id="pauseTimerButton" class="btn btn-mini btn-info" type="button">
+                                            <i class="icon-pause"></i> PAUSE
+                                        </button>
+                                        <button id="resetButton" class="btn btn-mini btn-danger" type="button">
+                                            <i class="icon-refresh"></i> RESET
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="form-actions problems-control">
                                     <div class="label problems-control-label">Problems Number &nbsp;</div>
-                                    <input id='problemNum' class="input-mini problems-input" rel='tooltip' name='problemNum' type='text'/>
+                                    <input id='problemNum' class="input-mini problems-input"
+                                           rel='tooltip' name='problemNum' type='text'/>
                                     <div></div>
-                                    <div class="label problems-control-label">Simple Mode &nbsp;
+                                    <div class="label problems-control-label">Suitable Distributions Only &nbsp;
                                     </div>
                                     <div class="switch switch-mini" data-on="info">
                                         <input id='isSimpleMode' type="checkbox" checked/>
+                                    </div>
+                                    <div class="label problems-control-label">Hide Distribution Description &nbsp;
+                                    </div>
+                                    <div class="switch switch-mini" data-on="info">
+                                        <input id='hideDistrInfo' type="checkbox" checked/>
                                     </div>
                                 </div>
                             </div>

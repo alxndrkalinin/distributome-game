@@ -308,19 +308,28 @@
 
             prepareGuessingMap();
 
-            $('.modal-hint-control').on('click', function() { $('.modal-body-hint').slideToggle();});
-            $('#game').on('click', function () { return false; });
-            $('#instructions').on('click', function() {
-                showInstructions();
+            $('.modal-hint-control').click(function() { $('.modal-body-hint').slideToggle();});
+            $('#game').click(function () { return false; });
+
+            var instructionsModal = $('#instructions-modal');
+            $('#instructions').click(function() {
+                instructionsModal.modal('show');
                 return false;
+            });
+            instructionsModal.on('hide', function() {
+                $('#countUp').stopwatch().stopwatch('start');
+                $('#pauseTimerButton').removeClass('hide');
+                $('#startTimerButton').addClass('hide');
+                $('#startGameButton').addClass('hide');
+                $('#resumeGameButton').removeClass('hide');
+                instructionsModal.off('hide');
+                $('#problemNum').focus();
             });
 
             createGraph();
             addControlsListeners();
-
-            // setting initial condition
             $('#problemNum').val(initialProblemNum).keyup();
-//            updateProblemNum(initialProblemNum);
+            instructionsModal.modal('show');
         };
 
         var createGraph = function(saveData) {
@@ -369,11 +378,6 @@
 
         function coord(line, axis) {
             return line[axis + '1']['baseVal']['value'];
-        }
-
-        var showInstructions = function () {
-            var instructionsModal = $('#instructions-modal');
-            instructionsModal.modal('show');
         }
 
         var getCrossAreaByIndices = function (xLine, yLine, xIndex, yIndex) {
@@ -841,15 +845,13 @@
                 isSimpleMode = false;
                 distributionsNumber = distributions.length;
             }
-            createGraph();
         };
 
         // Set listeners to graph controls group
         var addControlsListeners = function() {
 
-            var startButton = $('#startButton');
-            var startHtml = '<i class="icon-play"></i> START';
-            var pauseHtml = '<i class="icon-pause"></i> PAUSE';
+            var startTimerBtn = $('#startTimerButton');
+            var pauseTimerBtn = $('#pauseTimerButton');
 
             var waitForInputStop = (function() {
 
@@ -867,7 +869,9 @@
                     typeOut = setTimeout(function () {
                         // TODO: recreate graph with new number of problems
                         updateProblemNum(obj.val());
+                        // TODO: create reset graph function
                         $('#resetButton').click();
+
                     }, 500);
                 }
 
@@ -890,6 +894,35 @@
                 };
             })();
 
+            var toggleTimer = function() {
+                $('#countUp').stopwatch().stopwatch('toggle');
+                (startTimerBtn.hasClass('hide')) ? startTimerBtn.removeClass('hide') : startTimerBtn.addClass('hide');
+                (pauseTimerBtn.hasClass('hide')) ? pauseTimerBtn.removeClass('hide') : pauseTimerBtn.addClass('hide');
+            };
+
+            var resetTimer = function() {
+                $('#countUp').stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
+                if(startTimerBtn.hasClass('hide')) {
+                    startTimerBtn.removeClass('hide');
+                    pauseTimerBtn.addClass('hide');
+                }
+            };
+
+            var toggleDistribInfo = function() {
+                var distribDescriptionBlock = $('#distr-description-block');
+                var problemDescriptionBlock = $('#problem-description-block');
+                var timerInfoBlock = $('#timer-block');
+                if(distribDescriptionBlock.hasClass('hide')) {
+                    problemDescriptionBlock.removeClass('span7').addClass('span4');
+                    timerInfoBlock.removeClass('span5').addClass('span3');
+                    distribDescriptionBlock.removeClass('hide');
+                } else {
+                    problemDescriptionBlock.addClass('span7').removeClass('span4');
+                    timerInfoBlock.addClass('span5').removeClass('span3');
+                    distribDescriptionBlock.addClass('hide');
+                }
+            };
+
             $(window).resize(function() {
                 waitForFinalEvent(function() {
                     var saveData = true;
@@ -904,22 +937,25 @@
                     'selector': '',
                     'delay': { show: 500, hide: 100 },
                     'title': 'Enter number from 1 to ' + problems.length
-                })
-                .focus();
+                });
 
             $('#isSimpleMode').live('change', function() {
                 toggleSimpleMode();
-                $('#resetButton').click();
+                resetTimer();
+                createGraph();
             });
 
-            startButton.click(function() {
-                $('#countUp').stopwatch().stopwatch('toggle');
-                $(this).html(($(this).html() == startHtml) ? pauseHtml : startHtml);
+            $('#hideDistrInfo').live('change', function() {
+                toggleDistribInfo();
+                resetTimer();
+                createGraph();
             });
+
+            startTimerBtn.click(toggleTimer);
+            pauseTimerBtn.click(toggleTimer);
 
             $('#resetButton').click(function() {
-                $('#countUp').stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
-                startButton.html(startHtml);
+                resetTimer();
                 createGraph();
             });
         };
