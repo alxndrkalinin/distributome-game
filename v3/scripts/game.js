@@ -1,5 +1,7 @@
 (function() {
 
+    var VERSION = '1.1.0';
+
     var PROBLEMS_URL = './data/DistributomeGame_ProblemExamples.csv';
     var DISTRIBUTIONS_URL = './data/Distributome.xml';
 
@@ -1088,10 +1090,8 @@
         };
 
         var init = function() {
-            if(window.d3) {
-
+            if(window.d3 && window.$) {
                 getData();
-
             } else {
                 var slopegraph = document.getElementById('slopegraph');
                 if(slopegraph)
