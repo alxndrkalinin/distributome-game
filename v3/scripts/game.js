@@ -550,13 +550,13 @@
             }
 
             guessRects.data(guessData)
-                .attr('class', function(d) { return (d && d.class) ? d.class : 'guess-rect'; })
-                .attr('x', function(d) { return (d && d.x) ? d.x : 0; })
-                .attr('y', function(d) { return (d && d.y) ? d.y : 0; })
-                .attr('width', function(d) { return (d && d.width) ? d.width : 0; })
-                .attr('height', function(d) { return (d && d.height) ? d.height : 0; })
-                .attr('xIndex', function(d) { return ( d && d.xIndex) ? d.xIndex : -1; })
-                .attr('yIndex', function(d) { return ( d && d.yIndex) ? d.yIndex : -1; });
+                .attr('class', function(d) { return (d && d.hasOwnProperty('class')) ? d.class : 'guess-rect'; })
+                .attr('x', function(d) { return (d && d.hasOwnProperty('x')) ? d.x : 0; })
+                .attr('y', function(d) { return (d && d.hasOwnProperty('y')) ? d.y : 0; })
+                .attr('width', function(d) { return (d && d.hasOwnProperty('width')) ? d.width : 0; })
+                .attr('height', function(d) { return (d && d.hasOwnProperty('height')) ? d.height : 0; })
+                .attr('xIndex', function(d) { return ( d && d.hasOwnProperty('xIndex')) ? d.xIndex : -1; })
+                .attr('yIndex', function(d) { return ( d && d.hasOwnProperty('yIndex')) ? d.yIndex : -1; });
         };
 
 		var addGuessRect = function(cross, isRight) {
@@ -614,7 +614,8 @@
             var guessModal = $('#guess-modal');
             guessModal.modal('show');
 
-            var isRight = ($('.guess-rect').attr('class').indexOf('right') > -1);
+            var guessIndex = yIndex * distributionsNumber + xIndex;
+            var isRight = ($('.guess-rect').eq(guessIndex).attr('class').indexOf('right') > -1);
 
             $('.modal-body-comment').text((isRight && problems[yIndex].comment != '') ? 'Comment: ' + problems[yIndex].comment : '');
             $('.modal-body-hint').text((!isRight) ? 'Hint: ' + problems[yIndex].hint : '');
@@ -989,7 +990,10 @@
             });
 
             startTimerBtn.click(toggleTimer);
-            pauseTimerBtn.click(toggleTimer);
+            pauseTimerBtn.click(function() {
+                toggleTimer();
+
+            });
 
             $('#stopButton').click(function() {
                 countUpDiv.stopwatch().stopwatch('stop');
