@@ -815,7 +815,7 @@
         var updateProblemNum = function(newProblemNum) {
 
             if(isProblemNumValid(newProblemNum)) {
-                problemsNumber = newProblemNum;
+                problemsNumber = parseInt(newProblemNum);
                 if(isSimpleMode) {
                     distributionsNumber = newProblemNum;
                 }
@@ -855,6 +855,7 @@
             var guessRect;
             var problemWrongGuesses;
             var isSolved;
+            var solvedNumber = 0;
             var attemptedProblems = [];
             for(var k = 0; k < problemsNumber; k++) {
                 isSolved = false;
@@ -863,19 +864,23 @@
                     guessRect = d3.selectAll('.guess-rect').filter(function(d, i) { return i == k * distributionsNumber + j; })
                     if(guessRect.attr('class').indexOf('right') > -1) {
                         isSolved = true;
+                        solvedNumber += 1;
                     } else if(guessRect.attr('class').indexOf('wrong') > -1) {
                         problemWrongGuesses += 1;
                     }
                 }
                 if(problemWrongGuesses !== 0 || isSolved === true)
-                attemptedProblems.push({
-                    name: problems[k].name,
-                    isSolved: isSolved,
-                    problemWrongGuesses: problemWrongGuesses
+                    attemptedProblems.push({
+                        name: problems[k].name,
+                        isSolved: isSolved,
+                        problemWrongGuesses: problemWrongGuesses
                 });
             }
 
-            return attemptedProblems;
+            return {
+                attemptedProblems: attemptedProblems,
+                solvedNumber: solvedNumber
+            };
         };
 
         // Set listeners to graph controls group
@@ -885,6 +890,7 @@
 
             var startTimerBtn = $('#startTimerButton');
             var pauseTimerBtn = $('#pauseTimerButton');
+            var resumeGameBtn = $('#resumeGameButton');
             var countUpDiv = $('#countUp');
 
             var waitForInputStop = (function() {
@@ -994,7 +1000,8 @@
 
                 var resultsTableBody = $('#resultsTableBody');
                 resultsTableBody.html('');
-                var attemptedGuesses = getGuessesSummary();
+                var guessesSummary = getGuessesSummary();
+                var attemptedGuesses = guessesSummary.attemptedProblems;
                 var html = '';
                 for(var i = 0; i < attemptedGuesses.length; i++) {
 
@@ -1006,16 +1013,19 @@
 
                     resultsTableBody.append(html);
                 }
+                (guessesSummary.solvedNumber === problemsNumber) ? resumeGameBtn.addClass('hide')
+                    : resumeGameBtn.removeClass('hide');
             });
             $('#results-modal').on('hide', function(a, b) {
                 if(!isResume) {
                     resetTimer();
                     createGraph();
+                    toggleTimer();
                 } else
                     isResume = false;
             });
             $('#printResultsButton').click(function() { window.print(); });
-            $('#resumeGameButton').click(function() {
+            resumeGameBtn.click(function() {
                 isResume = true;
                 $('#results-modal').modal('hide');
                 pauseTimerBtn.removeClass('hide');
