@@ -24,7 +24,6 @@
                 },
                 error: function(data, text) {
                     console.log('Load wasn\'t performed:' + text);
-                    // TODO: show modal window with the error
                 }
             });
         }
@@ -83,8 +82,7 @@
                 return distributions;
 
             } else {
-                console.log("Can't load Distributome.xml");
-                // TODO: show error modal window
+                console.log('Can\'t load Distributome.xml');
                 return false;
             }
         }
@@ -92,7 +90,7 @@
         var csvToJson = function ( strData, strDelimiter ){
             // Check to see if the delimiter is defined. If not,
             // then default to comma.
-            strDelimiter = (strDelimiter || ",");
+            strDelimiter = (strDelimiter || ',');
 
             // Create a regular expression to parse the CSV values.
             var objPattern = new RegExp(
@@ -318,19 +316,21 @@
                 instructionsModal.modal('show');
                 return false;
             });
-            instructionsModal.on('hide', function() {
+            instructionsModal.one('hide', function() {
                 $('#countUp').stopwatch().stopwatch('start');
                 $('#pauseTimerButton').removeClass('hide');
                 $('#startTimerButton').addClass('hide');
                 $('#startGameButton').addClass('hide');
                 $('#closeInstructionsButton').removeClass('hide');
-                instructionsModal.off('hide');
+                instructionsModal.on('show', toggleTimer);
+                instructionsModal.on('hide', toggleTimer);
                 $('#problemNum').focus();
             });
 
-            createGraph();
             addControlsListeners();
-            $('#problemNum').val(initialProblemNum).keyup();
+            updateProblemNum(initialProblemNum);
+            $('#problemNum').val(initialProblemNum);
+            createGraph();
             instructionsModal.modal('show');
         };
 
@@ -474,8 +474,8 @@
         var updateDescriptions = function(distributionIndex, problemIndex) {
             $('#problemDescription').text(problems[problemIndex].description);
             $('#distributionDescription').text(distributions[distributionIndex].description);
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById("problemDescription")]);
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById("distributionDescription")]);
+            MathJax.Hub.Queue(['Typeset', MathJax.Hub, document.getElementById('problemDescription')]);
+            MathJax.Hub.Queue(['Typeset', MathJax.Hub, document.getElementById('distributionDescription')]);
         }
 
         var highlight = function(area) {
@@ -644,8 +644,8 @@
 
             var xMouse = xM || 0;
             var yMouse = yM || 0;
-            xLine.attr("x1", xFisheye).attr("x2", xFisheye);
-            yLine.attr("y1", yFisheye).attr("y2", yFisheye);
+            xLine.attr('x1', xFisheye).attr('x2', xFisheye);
+            yLine.attr('y1', yFisheye).attr('y2', yFisheye);
 
 			updateHighlighting(xLine, yLine, xMouse, yMouse);
             updateGuessRects(xLine, yLine, guessRects);
@@ -723,13 +723,13 @@
             var xFisheye = cartesianData.xFisheye;
             var yFisheye = cartesianData.yFisheye;
 
-            svg.append("g")
-                .attr("transform", "translate(-.5,-.5)");
+            svg.append('g')
+                .attr('transform', 'translate(-.5,-.5)');
 
-            svg.append("rect")
-                .attr("class", "background")
-                .attr("width", width)
-                .attr("height", height);
+            svg.append('rect')
+                .attr('class', 'background')
+                .attr('width', width)
+                .attr('height', height);
 
             svg.insert('rect', 'background')
                 .attr('class', 'highlight column')
@@ -747,7 +747,7 @@
 
             var guessRects = svg.selectAll('.guess-rect')
                 .data(guessData)
-                .enter().append("rect")
+                .enter().append('rect')
                 .attr('class', function(d) { return (d && d.class) ? d.class : 'guess-rect'; })
                 .attr('x', function(d) { return (d && d.x) ? d.x : 0; })
                 .attr('y', function(d) { return (d && d.y) ? d.y : 0; })
@@ -756,9 +756,9 @@
                 .attr('xIndex', function(d) { return ( d && d.xIndex) ? d.xIndex : ''; })
                 .attr('yIndex', function(d) { return ( d && d.yIndex) ? d.yIndex : ''; });
 
-            var scoreRects = svg.selectAll(".score-rect")
+            var scoreRects = svg.selectAll('.score-rect')
                 .data(scoreColumnData)
-                .enter().append("rect")
+                .enter().append('rect')
                 .attr('class', function(d) { return (d && d.class) ? d.class : 'score-rect'; })
                 .attr('x', width)
                 .attr('y', function(d) { return d.y; })
@@ -783,17 +783,17 @@
                 .attr('x', 0)
                 .attr('y', 0);
 
-            var xLine = svg.selectAll(".x")
+            var xLine = svg.selectAll('.x')
                 .data(xSteps)
-                .enter().append("line")
-                .attr("class", "x")
-                .attr("y2", height);
+                .enter().append('line')
+                .attr('class', 'x')
+                .attr('y2', height);
 
-            var yLine = svg.selectAll(".y")
+            var yLine = svg.selectAll('.y')
                 .data(ySteps)
-                .enter().append("line")
-                .attr("class", "y")
-                .attr("x2", width + scoreColumnWidth);
+                .enter().append('line')
+                .attr('class', 'y')
+                .attr('x2', width + scoreColumnWidth);
 
             svg.append('line')
                 .attr('class', 'x')
@@ -814,13 +814,10 @@
         };
 
         var updateProblemNum = function(newProblemNum) {
-
             if(isProblemNumValid(newProblemNum)) {
                 problemsNumber = parseInt(newProblemNum);
-                if(isSimpleMode) {
+                if(isSimpleMode)
                     distributionsNumber = newProblemNum;
-                }
-                createGraph();
             } else {
                 $('#problemNum').tooltip('show');
                 setTimeout(function() {
@@ -849,6 +846,15 @@
                 isSimpleMode = false;
                 distributionsNumber = distributions.length;
             }
+        };
+
+        var toggleTimer = function() {
+            var startTimerBtn = $('#startTimerButton');
+            var pauseTimerBtn = $('#pauseTimerButton');
+            var countUpDiv = $('#countUp');
+            countUpDiv.stopwatch().stopwatch('toggle');
+            (startTimerBtn.hasClass('hide')) ? startTimerBtn.removeClass('hide') : startTimerBtn.addClass('hide');
+            (pauseTimerBtn.hasClass('hide')) ? pauseTimerBtn.removeClass('hide') : pauseTimerBtn.addClass('hide');
         };
 
         var getGuessesSummary = function() {
@@ -892,6 +898,7 @@
             var startTimerBtn = $('#startTimerButton');
             var pauseTimerBtn = $('#pauseTimerButton');
             var resumeGameBtn = $('#resumeGameButton');
+            var instructionsModal = $('#instructions-modal');
             var countUpDiv = $('#countUp');
 
             var waitForInputStop = (function() {
@@ -908,10 +915,10 @@
                     clearTimer();
 
                     typeOut = setTimeout(function () {
-                        // TODO: recreate graph with new number of problems
                         updateProblemNum(obj.val());
                         resetTimer();
                         createGraph();
+                        toggleTimer();
                     }, 500);
                 }
 
@@ -925,7 +932,7 @@
                 var timers = {};
                 return function (callback, ms, uniqueId) {
                     if (!uniqueId) {
-                        uniqueId = "Don't call this twice without a uniqueId";
+                        uniqueId = 'Don\'t call this twice without a uniqueId';
                     }
                     if (timers[uniqueId]) {
                         clearTimeout (timers[uniqueId]);
@@ -933,12 +940,6 @@
                     timers[uniqueId] = setTimeout(callback, ms);
                 };
             })();
-
-            var toggleTimer = function() {
-                countUpDiv.stopwatch().stopwatch('toggle');
-                (startTimerBtn.hasClass('hide')) ? startTimerBtn.removeClass('hide') : startTimerBtn.addClass('hide');
-                (pauseTimerBtn.hasClass('hide')) ? pauseTimerBtn.removeClass('hide') : pauseTimerBtn.addClass('hide');
-            };
 
             var resetTimer = function() {
                 countUpDiv.stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
@@ -967,7 +968,7 @@
                 waitForFinalEvent(function() {
                     var saveData = true;
                     createGraph(saveData);
-                }, 500, "0a1edaaa-3f4e-4a23-8bc2-7f6e1a5f35b0");
+                }, 500, '0a1edaaa-3f4e-4a23-8bc2-7f6e1a5f35b0');
             });
 
             $('#problemNum')
@@ -982,18 +983,12 @@
                 toggleSimpleMode();
                 resetTimer();
                 createGraph();
+                toggleTimer();
             });
-            $('#hideDistrInfo').live('change', function() {
-                toggleDistribInfo();
-                resetTimer();
-                createGraph();
-            });
+            $('#hideDistrInfo').live('change', toggleDistribInfo);
 
             startTimerBtn.click(toggleTimer);
-            pauseTimerBtn.click(function() {
-                toggleTimer();
-
-            });
+            pauseTimerBtn.click(function() { instructionsModal.modal('show'); });
 
             $('#stopButton').click(function() {
                 countUpDiv.stopwatch().stopwatch('stop');
@@ -1041,7 +1036,7 @@
         // Set listeners to objects inside graph
         var addGraphListeners = function(xLine, yLine, xFisheye, yFisheye, scores, guessRects) {
 
-            svg.on("mousemove", function() {
+            svg.on('mousemove', function() {
 
 				var mouse = d3.mouse(this);
 
