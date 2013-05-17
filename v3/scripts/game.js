@@ -361,7 +361,10 @@
         var adjustViewport = function() {
 
             var viewportWidth = $(window).width() - 2 * margins;
-            var viewportHeight = $(window).height() - 2 * margins - $('.header').height() - $('.descriptions').height();
+            var controlsHeight = Math.max($('#problem-description-block').height(),
+                $('#distr-description-block').height(),
+                $('#timer-block').height());
+            var viewportHeight = $(window).height() - 2 * margins - $('.header').height() - controlsHeight;
 
             width = Math.max(DEFAULT_WIDTH, viewportWidth);
             height = Math.max(DEFAULT_HEIGHT, viewportHeight);
