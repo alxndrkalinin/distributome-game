@@ -330,11 +330,12 @@
             addControlsListeners();
             updateProblemNum(initialProblemNum);
             $('#problemNum').val(initialProblemNum);
-            createGraph();
+            var saveData = false; var randomizeProblems = true;
+            createGraph(saveData, randomizeProblems);
             instructionsModal.modal('show');
         };
 
-        var createGraph = function(saveData) {
+        var createGraph = function(saveData, randomizeProblems) {
 
             saveData = saveData || false;
             removeGraph();
@@ -346,7 +347,7 @@
                 .attr('width', width)
                 .attr('height', height);
 
-            renderCartesian(saveData);
+            renderCartesian(saveData, randomizeProblems);
         }
 
         // Clean graph area before redrawing
@@ -655,10 +656,15 @@
 			updateScores(yLine, scores);
         }
 
-        var getCartesianData = function(saveData) {
+        var getCartesianData = function(saveData, randomizeProblems) {
 
             var scoreColumnWidth = scoreColumnWidthPercent * width;
             width = width - scoreColumnWidth;
+
+            if(randomizeProblems && !saveData) {
+                problems = DataProcessor.shuffleArray(problems);
+                prepareGuessingMap();
+            }
 
             if (isSimpleMode && !saveData) {
                 shrinkDistributions();
@@ -716,9 +722,9 @@
             }
         };
 
-        var renderCartesian = function (saveData) {
+        var renderCartesian = function (saveData, randomizeProblems) {
 
-            var cartesianData = getCartesianData(saveData);
+            var cartesianData = getCartesianData(saveData, randomizeProblems);
 
             var scoreColumnWidth = cartesianData.scoreColumnWidth;
             var xSteps = cartesianData.xSteps;
@@ -897,6 +903,7 @@
         var addControlsListeners = function() {
 
             var isResume = false;
+            var randomizeProblems = true;
 
             var startTimerBtn = $('#startTimerButton');
             var pauseTimerBtn = $('#pauseTimerButton');
@@ -920,7 +927,8 @@
                     typeOut = setTimeout(function () {
                         updateProblemNum(obj.val());
                         resetTimer();
-                        createGraph();
+                        var saveData = false;
+                        createGraph(saveData, randomizeProblems);
                         toggleTimer();
                     }, 500);
                 }
@@ -967,6 +975,10 @@
                 }
             };
 
+            var toggleProblemRandomization = function() {
+                randomizeProblems = !randomizeProblems;
+            };
+
             $(window).resize(function() {
                 waitForFinalEvent(function() {
                     var saveData = true;
@@ -974,6 +986,8 @@
                 }, 500, '0a1edaaa-3f4e-4a23-8bc2-7f6e1a5f35b0');
             });
 
+            $('#hideDistrInfo').live('change', toggleDistribInfo);
+            $('#randomizeProblems').live('change', toggleProblemRandomization);
             $('#problemNum')
                 .keydown(waitForInputStop.clearTimer)
                 .keyup(function() { waitForInputStop.startTimer($(this)); })
@@ -985,10 +999,10 @@
             $('#isSimpleMode').live('change', function() {
                 toggleSimpleMode();
                 resetTimer();
-                createGraph();
+                var saveData = false;
+                createGraph(saveData, false);
                 toggleTimer();
             });
-            $('#hideDistrInfo').live('change', toggleDistribInfo);
 
             startTimerBtn.click(toggleTimer);
             pauseTimerBtn.click(function() { instructionsModal.modal('show'); });
@@ -1021,7 +1035,8 @@
             $('#results-modal').on('hide', function(a, b) {
                 if(!isResume) {
                     resetTimer();
-                    createGraph();
+                    var saveData = false;
+                    createGraph(saveData, randomizeProblems);
                     toggleTimer();
                 } else
                     isResume = false;
