@@ -318,8 +318,8 @@
             });
             instructionsModal.one('hide', function() {
                 $('#countUp').stopwatch().stopwatch('start');
-                $('#pauseTimerButton').removeClass('hide');
-                $('#startTimerButton').addClass('hide');
+//                $('#pauseTimerButton').removeClass('hide');
+//                $('#startTimerButton').addClass('hide');
                 $('#startGameButton').addClass('hide');
                 $('#closeInstructionsButton').removeClass('hide');
                 instructionsModal.on('show', toggleTimer);
@@ -858,12 +858,8 @@
         };
 
         var toggleTimer = function() {
-            var startTimerBtn = $('#startTimerButton');
-            var pauseTimerBtn = $('#pauseTimerButton');
             var countUpDiv = $('#countUp');
             countUpDiv.stopwatch().stopwatch('toggle');
-            (startTimerBtn.hasClass('hide')) ? startTimerBtn.removeClass('hide') : startTimerBtn.addClass('hide');
-            (pauseTimerBtn.hasClass('hide')) ? pauseTimerBtn.removeClass('hide') : pauseTimerBtn.addClass('hide');
         };
 
         var getGuessesSummary = function() {
@@ -905,8 +901,6 @@
             var isResume = false;
             var randomizeProblems = true;
 
-            var startTimerBtn = $('#startTimerButton');
-            var pauseTimerBtn = $('#pauseTimerButton');
             var resumeGameBtn = $('#resumeGameButton');
             var instructionsModal = $('#instructions-modal');
             var countUpDiv = $('#countUp');
@@ -954,10 +948,6 @@
 
             var resetTimer = function() {
                 countUpDiv.stopwatch().stopwatch('reset').stopwatch('stop').text('00:00:00');
-                if(startTimerBtn.hasClass('hide')) {
-                    startTimerBtn.removeClass('hide');
-                    pauseTimerBtn.addClass('hide');
-                }
             };
 
             var toggleDistribInfo = function() {
@@ -1004,13 +994,8 @@
                 toggleTimer();
             });
 
-            startTimerBtn.click(toggleTimer);
-            pauseTimerBtn.click(function() { instructionsModal.modal('show'); });
-
             $('#stopButton').click(function() {
                 countUpDiv.stopwatch().stopwatch('stop');
-                startTimerBtn.removeClass('hide');
-                (pauseTimerBtn.hasClass('hide')) ? void(0) : pauseTimerBtn.addClass('hide');
                 $('#results-modal').modal('show');
                 $('#resultTime').text(countUpDiv.text());
 
@@ -1045,8 +1030,6 @@
             resumeGameBtn.click(function() {
                 isResume = true;
                 $('#results-modal').modal('hide');
-                pauseTimerBtn.removeClass('hide');
-                startTimerBtn.addClass('hide');
                 countUpDiv.stopwatch().stopwatch('start');
             });
         };
